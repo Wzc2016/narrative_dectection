@@ -1,0 +1,79 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.rowC{display:flex; flex-direction:row;}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.charts{
+  display: inline-flex;
+  padding-top: 30px;
+  padding-bottom: 20px;
+  border-radius: 25px;
+  margin: 30px 30px;
+  border: 5px solid grey;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.temperature{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h1{
+  text-align: center;
+}
+
+.date-slider{
+  /*width: 50%;*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.display {
+  text-align: center;
+  height: 100%;
+}
+
+.slider {
+  width: 300px !important;
+}
