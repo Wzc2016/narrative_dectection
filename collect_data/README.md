@@ -14,7 +14,7 @@ Or you can run
 python3 collect.py Trump
 ```
 
-which means to collect data of all recent posts with hashtag 'Trump'. \(Can be a small number\)
+which means to collect data of 15 recent posts with hashtag 'Trump'.
 
 You can find data in the file 'output.txt'.
 
