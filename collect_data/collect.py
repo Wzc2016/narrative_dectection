@@ -27,7 +27,7 @@ if __name__ == '__main__':
 	
 	BASE_URL = "https://api.twitter.com/1.1/search/tweets.json"
 	
-	f = open("output.json","w+")
+	f = open("output.txt","w+")
 	oauth = request_auth()
 
 	if len(sys.argv) != 3 and len(sys.argv) != 2:

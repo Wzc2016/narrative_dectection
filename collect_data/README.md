@@ -16,11 +16,11 @@ python3 collect.py Trump
 
 which means to collect data of all recent posts with hashtag 'Trump'. \(Can be a small number\)
 
-You can find data in the file 'output.json'.
+You can find data in the file 'output.txt'.
 
 Sample output:
 
-```json
+```c
 {'text': 'RT @pollsofpolitics: Who is or would be the better #POTUS, @JoeBiden or @realDonaldTrump??\n\nPlease Vote and Retweet to spread poll. Thanks!…', 'id': 1240439968406831104, 'source': '<a href="https://mobile.twitter.com" rel="nofollow">Twitter Web App</a>', 'geo': None, 'metadata': {'iso_language_code': 'en', 'result_type': 'recent'}, 'id_str': '1240439968406831104', 'created_at': 'Thu Mar 19 00:48:29 +0000 2020'}
 {'text': 'Exactly, because I believe that #trump &amp; #GOP R not doing anything because they want it to go to November and then… https://t.co/VbRAk5CzcY', 'id': 1240439963910656002, 'source': '<a href="https://mobile.twitter.com" rel="nofollow">Twitter Web App</a>', 'geo': None, 'metadata': {'iso_language_code': 'en', 'result_type': 'recent'}, 'id_str': '1240439963910656002', 'created_at': 'Thu Mar 19 00:48:28 +0000 2020'}
 {'text': "RT @mterr337: @bocacurly @RichDish @AntonKreitzer5 @inky_mark @politico #trump can't unilaterally postpone or cancel an election. It's a ve…", 'id': 1240439953747775489, 'source': '<a href="http://twitter.com/download/android" rel="nofollow">Twitter for Android</a>', 'geo': None, 'metadata': {'iso_language_code': 'en', 'result_type': 'recent'}, 'id_str': '1240439953747775489', 'created_at': 'Thu Mar 19 00:48:25 +0000 2020'}
