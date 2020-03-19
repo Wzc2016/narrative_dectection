@@ -1,4 +1,4 @@
-### How to run
+## How to run
 
 There are two options. You can run
 
