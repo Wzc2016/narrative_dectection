@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
 		results = make_request(BASE_URL, parameters)
 
-		my_keys = frozenset(('text', 'profile_image_url', 'to_user_id_str', 'from_user', 'from_user_id', 'to_user_id', 'geo', 'id', 'iso_language_code', 'from_user_id_str', 'source', 'id_str', 'created_at', 'metadata'))
+		my_keys = ['text', 'profile_image_url', 'to_user_id_str', 'from_user', 'from_user_id', 'to_user_id', 'geo', 'id', 'iso_language_code', 'from_user_id_str', 'source', 'id_str', 'created_at', 'metadata']
 
 		my_keys = [x for x in my_keys if x in results['statuses'][0].keys()]
 
