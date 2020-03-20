@@ -2,6 +2,7 @@ import tweepy
 from tweepy import OAuthHandler
 from requests_oauthlib import OAuth1
 import requests
+import pandas as pd
 import sys
 
 
@@ -27,7 +28,7 @@ if __name__ == '__main__':
 	
 	BASE_URL = "https://api.twitter.com/1.1/search/tweets.json"
 	
-	f = open("output.txt","w+")
+	# f = open("output.txt","w+")
 	oauth = request_auth()
 
 	if len(sys.argv) != 3 and len(sys.argv) != 2:
@@ -48,12 +49,15 @@ if __name__ == '__main__':
 		# my_keys = [x for x in my_keys if x in results['statuses'][0].keys()]
 
 		my_keys = ['text', 'id', 'created_at']
+		data_list = []
 
 		for item in results['statuses']:
 			item_modified = { my_key: item[my_key] for my_key in my_keys }
 			item_modified['user_id'] = item['user']['id']
-			f.write(str(item_modified) + '\n')
-
+			# f.write(str(item_modified) + '\n')
+			data_list.append([item_modified['user_id'], item_modified['text'], item_modified['created_at'][4:10]+item_modified['created_at'][-5:]])
+		extracted_dataframe = pd.DataFrame(data_list,columns=["name","rawTweet","date"])	
+		extracted_dataframe.to_csv("./extracted_data.csv", header=True, index=False, sep="\t")
 	else:
 		parameters = {"q": hashtag, 'result_type': 'recent', 'include_entities': False}
 
@@ -64,9 +68,10 @@ if __name__ == '__main__':
 		# my_keys = [x for x in my_keys if x in results['statuses'][0].keys()]
 
 		my_keys = ['text', 'id', 'created_at']
-
+		data_list = []
 		for item in results['statuses']:
 			item_modified = { my_key: item[my_key] for my_key in my_keys }
 			item_modified['user_id'] = item['user']['id']
-			f.write(str(item_modified) + '\n')
-
+			data_list.append([item_modified['user_id'], item_modified['text'], item_modified['created_at'][4:10]+item_modified['created_at'][-5:]])
+		extracted_dataframe = pd.DataFrame(data_list,columns=["name","rawTweet","date"])	
+		extracted_dataframe.to_csv("./extracted_data.csv", header=True, index=False, sep="\t")
