@@ -43,12 +43,15 @@ if __name__ == '__main__':
 
 		results = make_request(BASE_URL, parameters)
 
-		my_keys = ['text', 'profile_image_url', 'to_user_id_str', 'from_user', 'from_user_id', 'to_user_id', 'geo', 'id', 'iso_language_code', 'from_user_id_str', 'source', 'id_str', 'created_at', 'metadata']
+		# my_keys = ['user', 'text', 'profile_image_url', 'to_user_id_str', 'from_user', 'from_user_id', 'to_user_id', 'geo', 'id', 'iso_language_code', 'from_user_id_str', 'source', 'id_str', 'created_at', 'metadata']
 
-		my_keys = [x for x in my_keys if x in results['statuses'][0].keys()]
+		# my_keys = [x for x in my_keys if x in results['statuses'][0].keys()]
+
+		my_keys = ['text', 'id', 'created_at']
 
 		for item in results['statuses']:
 			item_modified = { my_key: item[my_key] for my_key in my_keys }
+			item_modified['user_id'] = item['user']['id']
 			f.write(str(item_modified) + '\n')
 
 	else:
@@ -56,11 +59,14 @@ if __name__ == '__main__':
 
 		results = make_request(BASE_URL, parameters)
 
-		my_keys = frozenset(('text', 'profile_image_url', 'to_user_id_str', 'from_user', 'from_user_id', 'to_user_id', 'geo', 'id', 'iso_language_code', 'from_user_id_str', 'source', 'id_str', 'created_at', 'metadata'))
+		# my_keys = ['user', 'text', 'profile_image_url', 'to_user_id_str', 'from_user', 'from_user_id', 'to_user_id', 'geo', 'id', 'iso_language_code', 'from_user_id_str', 'source', 'id_str', 'created_at', 'metadata']
 
-		my_keys = [x for x in my_keys if x in results['statuses'][0].keys()]
+		# my_keys = [x for x in my_keys if x in results['statuses'][0].keys()]
+
+		my_keys = ['text', 'id', 'created_at']
 
 		for item in results['statuses']:
 			item_modified = { my_key: item[my_key] for my_key in my_keys }
+			item_modified['user_id'] = item['user']['id']
 			f.write(str(item_modified) + '\n')
 
