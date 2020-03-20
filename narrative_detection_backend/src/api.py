@@ -26,6 +26,17 @@ class NpEncoder(json.JSONEncoder):
         else:
             return super(NpEncoder, self).default(obj)
 
+def get_result(output_file):
+    data_df = pd.read_csv(output_file, sep='\t', dtype={'date': str})
+    res_dict = {"positive":0, "negative":0, "neutral":0}
+    pos_df = data_df.loc[data_df['label']==1]
+    neg_df = data_df.loc[data_df['label']==2]
+    neu_df = data_df.loc[data_df['label']==0]
+    res_dict = {"positive":pos_df['label'].count(), "negative":neg_df['label'].count(), "neutral":neu_df['label'].count()}
+    if res_dict["positive"]<res_dict["negative"]:
+        res_dict["positive"],res_dict["negative"] = res_dict["negative"],res_dict["positive"]
+    return res_dict
+
 def get_date_result(output_file, date):
     res_dict = {"positive":0, "negative":0, "neutral":0}
     data_df = pd.read_csv(output_file, sep='\t', dtype={'date': str})
@@ -53,55 +64,66 @@ def get_all_result(output_file):
         res_dict[str(date)] = curr_res_dict
     return res_dict
 
-@app.route('/polar_result/<dataset>/<date>', methods=['GET'])
-def get_by_date(dataset,date):
-    # date: MMDDYYYY 02012020
-    # dataset: ACFT, Leg_Tuck
-    formatted_date = date.replace("_"," ")
-    if not date:
-        return Response("Bad Request! No date specified", status=400)
-    if not dataset:
-        return Response("Bad Request! No dataset specified", status=400)
-    out_file = "../results/"+dataset+".csv"
-    res_dict = get_date_result(out_file,formatted_date)
-    # res_dict = {'positive': 68, 'negative': 25, 'neutral': 23}
-    return NpEncoder().encode(res_dict),200
+# @app.route('/polar_result/<dataset>/<date>', methods=['GET'])
+# def get_by_date(dataset,date):
+#     # date: MMDDYYYY 02012020
+#     # dataset: ACFT, Leg_Tuck
+#     formatted_date = date.replace("_"," ")
+#     if not date:
+#         return Response("Bad Request! No date specified", status=400)
+#     if not dataset:
+#         return Response("Bad Request! No dataset specified", status=400)
+#     out_file = "../results/"+dataset+".csv"
+#     res_dict = get_date_result(out_file,formatted_date)
+#     # res_dict = {'positive': 68, 'negative': 25, 'neutral': 23}
+#     return NpEncoder().encode(res_dict),200
 
-@app.route('/polar_result/<dataset>/<date1>/<date2>', methods=['GET'])
-def get_by_range(dataset,date1,date2):
-    # date1: MMDDYYYY 02012020 start date
-    # date1: MMDDYYYY 02012020 end date
-    # dataset: ACFT, Leg_Tuck
-    res_dict = {"positive":0, "negative":0, "neutral":0}
-    if not date1:
-        return Response("Bad Request! No date specified", status=400)
-    if not date2:
-        return Response("Bad Request! No date specified", status=400)
-    if not dataset:
-        return Response("Bad Request! No dataset specified", status=400)
-    out_file = "../results/"+dataset+".csv"
-    date1 = date1[-4:]+date1[0:-4]
-    date2 = date2[-4:]+date2[0:-4]
-    # print(date1)
-    # print(date2)
-    for i in range(int(date1),int(date2)+1):
-        print(i)
-        curr_date = str(i)[4:]+str(i)[0:4]
-        curr_dict = get_date_result(out_file,curr_date)
-        print(curr_date)
-    # res_dict = {'positive': 68, 'negative': 25, 'neutral': 23}
-        res_dict["positive"]+=curr_dict["positive"]
-        res_dict["negative"]+=curr_dict["negative"]
-        res_dict["neutral"]+=curr_dict["neutral"]
-    return NpEncoder().encode(res_dict),200
+# @app.route('/polar_result/<dataset>/<date1>/<date2>', methods=['GET'])
+# def get_by_range(dataset,date1,date2):
+#     # date1: MMDDYYYY 02012020 start date
+#     # date1: MMDDYYYY 02012020 end date
+#     # dataset: ACFT, Leg_Tuck
+#     res_dict = {"positive":0, "negative":0, "neutral":0}
+#     if not date1:
+#         return Response("Bad Request! No date specified", status=400)
+#     if not date2:
+#         return Response("Bad Request! No date specified", status=400)
+#     if not dataset:
+#         return Response("Bad Request! No dataset specified", status=400)
+#     out_file = "../results/"+dataset+".csv"
+#     date1 = date1[-4:]+date1[0:-4]
+#     date2 = date2[-4:]+date2[0:-4]
+#     # print(date1)
+#     # print(date2)
+#     for i in range(int(date1),int(date2)+1):
+#         print(i)
+#         curr_date = str(i)[4:]+str(i)[0:4]
+#         curr_dict = get_date_result(out_file,curr_date)
+#         print(curr_date)
+#     # res_dict = {'positive': 68, 'negative': 25, 'neutral': 23}
+#         res_dict["positive"]+=curr_dict["positive"]
+#         res_dict["negative"]+=curr_dict["negative"]
+#         res_dict["neutral"]+=curr_dict["neutral"]
+#     return NpEncoder().encode(res_dict),200
+
+# @app.route('/polar_result/<dataset>', methods=['GET'])
+# def get_all(dataset):
+#     # dataset: ACFT, Leg_Tuck
+#     if not dataset:
+#         return Response("Bad Request! No dataset specified", status=400)
+#     out_file = "../results/"+dataset+".csv"
+#     res_dict = get_all_result(out_file)
+#     # res_dict = {'positive': 68, 'negative': 25, 'neutral': 23}
+#     return NpEncoder().encode(res_dict),200
 
 @app.route('/polar_result/<dataset>', methods=['GET'])
-def get_all(dataset):
+def get_results(dataset):
     # dataset: ACFT, Leg_Tuck
     if not dataset:
         return Response("Bad Request! No dataset specified", status=400)
-    out_file = "../results/"+dataset+".csv"
-    res_dict = get_all_result(out_file)
+    command_run = os.system("python3 ./update_all_data.py " + dataset)
+    out_file = "../results/result.csv"
+    res_dict = get_result(out_file)
     # res_dict = {'positive': 68, 'negative': 25, 'neutral': 23}
     return NpEncoder().encode(res_dict),200
 
@@ -109,7 +131,7 @@ if __name__ == '__main__':
     # print(get_date_result("../results/ACFT.csv","Feb 01 2020"))
     # print(get_all_result("../results/ACFT.csv"))
     app.run(host='0.0.0.0', port=8000, debug=True)
-    
+    # command_run = os.system("python3 ./update_all_data.py " + "covid-19")
 # def get_all_result(output_file):
 #     file = open(output_file,"r")
 #     curr_line = file.readline()
