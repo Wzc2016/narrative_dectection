@@ -74,4 +74,8 @@ if __name__ == '__main__':
 			item_modified['user_id'] = item['user']['id']
 			data_list.append([item_modified['user_id'], item_modified['text'], item_modified['created_at'][4:10]+item_modified['created_at'][-5:]])
 		extracted_dataframe = pd.DataFrame(data_list,columns=["name","rawTweet","date"])	
+<<<<<<< HEAD
 		extracted_dataframe.to_csv("./extracted_data.csv", header=True, index=False, sep="\t")
+=======
+		extracted_dataframe.to_csv("./extracted_data.csv", header=True, index=False, sep="\t")
+>>>>>>> 1a2cfd7b74d4cf54531b520b0465c9801526a150
