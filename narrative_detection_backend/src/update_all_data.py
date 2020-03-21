@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # collect data
     if len(sys.argv) != 2:
         print(sys.argv)
-    command_run = os.system("python3 ../../collect_data/collect.py " + sys.argv[1])
+    command_run = os.system("python3 ../../collect_data/collect.py " + sys.argv[1] + " 100")
     
     
 #%%    
