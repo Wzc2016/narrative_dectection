@@ -33,8 +33,6 @@ def get_result(output_file):
     neg_df = data_df.loc[data_df['label']==2]
     neu_df = data_df.loc[data_df['label']==0]
     res_dict = {"positive":pos_df['label'].count(), "negative":neg_df['label'].count(), "neutral":neu_df['label'].count()}
-    if res_dict["positive"]<res_dict["negative"]:
-        res_dict["positive"],res_dict["negative"] = res_dict["negative"],res_dict["positive"]
     return res_dict
 
 def get_date_result(output_file, date):
