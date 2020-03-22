@@ -49,7 +49,11 @@ if __name__ == '__main__':
             }
         )
     )
-    one_avg_polarize = sum(r.json()["data"][i]["polarity"] for i in range(0,len(one_data_list)))/len(one_data_list)
+    if(len(one_data_list)==0):
+        print("one_data_list null")
+        one_avg_polarize = 2
+    else:
+        one_avg_polarize = sum(r.json()["data"][i]["polarity"] for i in range(0,len(one_data_list)))/len(one_data_list)
 
     two_df = label_to_date_df.loc[label_to_date_df["label"]=="2"]
     two_data_list = [{"text": t, "query": sys.argv[1]} for t in two_df["text"]]
@@ -62,7 +66,11 @@ if __name__ == '__main__':
             }
         )
     )
-    two_avg_polarize = sum(r.json()["data"][i]["polarity"] for i in range(0,len(two_data_list)))/len(two_data_list)
+    if(len(two_data_list)==0):
+        print("two_data_list null")
+        two_avg_polarize = 2
+    else:
+        two_avg_polarize = sum(r.json()["data"][i]["polarity"] for i in range(0,len(two_data_list)))/len(two_data_list)
 
     # Always make "1" more positive
     if (two_avg_polarize>one_avg_polarize):
