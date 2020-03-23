@@ -12,6 +12,7 @@ const chartStyle = {
   margin: 'auto auto',
 }
 
+var idVar;
 
 class Realtime extends Component {
 
@@ -67,11 +68,16 @@ class Realtime extends Component {
       beginTime: new Date().toLocaleString(),
       currentTopic: this.state.value,
       displayTime: true,
+      positive: 0,
+      negative: 0,
+      neutral: 0,
+      total: 0,
     })
 
-    setInterval( () => {
-      this.GetData();
+    clearInterval(idVar);
 
+    idVar = setInterval( () => {
+      this.GetData();
     }, 3000)
 
   }
@@ -102,7 +108,7 @@ class Realtime extends Component {
           </Button>
         </Link>
         <Button.Or />
-        <Link to={process.env.PUBLIC_URL + "/Demo"}>
+        <Link to={process.env.PUBLIC_URL + "/Demo"} onClick={() => {clearInterval(idVar); }}>
           <Button>
             Demo
           </Button>

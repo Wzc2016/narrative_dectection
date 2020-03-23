@@ -9,9 +9,10 @@ import GaugeChart from 'react-gauge-chart'
 import Thermometer from 'react-thermometer-component'
 import Slider, { Range } from 'rc-slider'; 
 import 'rc-slider/assets/index.css';
+import { Button, Input } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
 
-
-var API = 'http://127.0.0.1:8000/polar_result/';
+var API = 'http://127.0.0.1:8000/polar_result/demo/';
 var beginDate = '01242020';
 var endDate = '02162020';
 class App extends React.Component {
@@ -39,7 +40,7 @@ class App extends React.Component {
 
   componentDidMount() {
   	fetch(API + this.state.currentTopic + '/' + endDate)
-  	// .then(res => res.json())
+  	.then(res => res.json())
   	.then(
   		(result) => {
   			this.setState({
@@ -49,7 +50,7 @@ class App extends React.Component {
   		}
   	);
   	fetch(API + this.state.currentTopic + '/' + beginDate + '/' + endDate)
-  	// .then(res => res.json())
+  	.then(res => res.json())
   	.then(
   		(result) => {
   			this.setState({
@@ -118,10 +119,24 @@ class App extends React.Component {
   	 if (error) {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
-      return <div>Loading...</div>;
+      return <div className='display'>Loading...</div>;
     } else {
 	    return (
 	        	<div className='display'>
+            <br/>
+            <Button.Group size='large'>
+              <Link to={process.env.PUBLIC_URL + "/Realtime"}>
+                <Button>
+                  Realtime
+                </Button>
+              </Link>
+              <Button.Or />
+              <Link to={process.env.PUBLIC_URL + "/Demo"}>
+                <Button>
+                  Demo
+                </Button>
+              </Link>
+            </Button.Group>
 	            <h1>
 	                {this.state.currentTopic}
 	            </h1>
@@ -141,7 +156,7 @@ class App extends React.Component {
 	            <div className='charts'>
 	            	<div>
 			            <GaugeChart id="gauge-chart1" 
-			              nrOfLevels={2} 
+			              nrOfLevels={3} 
 			              animate={false}
 			              percent={(2 * this.state.positive + 1 * this.state.neutral)/(2 * this.state.total)}
 			           	  hideText={true}
@@ -173,10 +188,7 @@ class App extends React.Component {
 					</div>
 	            </div>
 
-	            <div style={{height: 200}}>
-	                <h2>Activities</h2>
-	                <h2>Activities</h2>
-	            </div>
+	            
 	        </div>
 	    );
 	  }
