@@ -2,10 +2,15 @@ import React, { Component } from 'react'
 import { Button, Input } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import GaugeChart from 'react-gauge-chart'
+import Thermometer from 'react-thermometer-component'
 
 import './Realtime.css'
 
 var APIUrl = 'http://127.0.0.1:8000/polar_result/';
+
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 
 const chartStyle = {
   width: 500,
@@ -29,8 +34,11 @@ class Realtime extends Component {
       neutral: 0,
       total: 0,
       beginTime: null,
-      curTime : new Date().toLocaleString(),
+      curTime : null,
       displayTime: false,
+      activity: 0,
+      displayCharts: false,
+      displayLoading: false,
     }
 
     this.keyPressHandler = this.keyPressHandler.bind(this);
@@ -52,33 +60,57 @@ class Realtime extends Component {
           neutral: this.state.neutral + result.neutral,
           total: this.state.positive + this.state.negative + this.state.neutral + result.positive + result.negative + result.neutral,
           curTime: new Date().toLocaleString(),
+          activity:  (result.positive + result.negative + result.neutral) / 100.0,
+
+          displayLoading: false,
+          displayCharts: true,
         })
-        console.log(this.state.total, this.state.positive, this.state.negative, this.state.neutral);
+        // console.log(this.state.total, this.state.positive, this.state.negative, this.state.neutral);
       }
     );
   }
 
   clickHandler() {
-    if(this.state.value.length === 0) {
+
+    clearInterval(idVar);
+
+    this.setState({
+      displayLoading: true,
+    })
+
+    sleep(5000).then(() => {
+
+
+      if(this.state.value.length === 0) {
       this.setState({currentTopic: ''});
       return;
     }
 
+
+
     this.setState({
       beginTime: new Date().toLocaleString(),
+      curTime: new Date().toLocaleString(),
       currentTopic: this.state.value,
       displayTime: true,
       positive: 0,
       negative: 0,
       neutral: 0,
       total: 0,
+      activity: 0,
+      displayLoading: true,
+      displayCharts: false,
     })
 
-    clearInterval(idVar);
+    
 
-    idVar = setInterval( () => {
-      this.GetData();
-    }, 3000)
+      idVar = setInterval( () => {
+        this.GetData();
+      }, 3000)
+
+
+    })
+    
 
   }
 
@@ -97,7 +129,8 @@ class Realtime extends Component {
 
   render() {
     var displayTime = {display: this.state.displayTime ? 'block' : 'none' };
-    
+    var displayCharts = {display: this.state.displayCharts ? 'block' : 'none' }
+    var displayLoading = {display: this.state.displayLoading ? 'block' : 'none' }
     return (
       <div className='Realtime'>
       <br/>
@@ -127,13 +160,44 @@ class Realtime extends Component {
           </Button>
           <br/>
           <br/>
-          <GaugeChart id="gaugeChart2" 
-            nrOfLevels={3} 
-            animate={false}
-            percent={(2 * this.state.positive + 1 * this.state.neutral)/(2 * this.state.total)}
-            hideText={true}
-            style={chartStyle}
-          />
+          <div style={displayLoading}>
+            Loading......(May take a few seconds.)
+          </div>
+
+            <div className='charts'>
+                  <div>
+                    <GaugeChart id="gauge-chart1" 
+                      nrOfLevels={2} 
+                      animate={false}
+                      percent={(2 * this.state.positive + 1 * this.state.neutral)/(2 * this.state.total)}
+                      hideText={true}
+                    />
+                    Sentiment
+                  </div>
+                  <div>
+                    <GaugeChart id="gauge-chart2" 
+                      nrOfLevels={1} 
+                      animate={false}
+                      percent={this.state.activity}
+                      hideText={true}
+                    />
+                    Activity
+                </div>
+                  <div>
+
+                    <div className='temperature'>
+                      <Thermometer
+                          theme="light"
+                          value={this.state.activity * 100}
+                          max="100"
+                          size="normal"
+                          height="150"
+                        />
+                      </div>
+                    <br/>
+                      Alert Status
+                    </div>
+                  </div>
           <br/>
 
           

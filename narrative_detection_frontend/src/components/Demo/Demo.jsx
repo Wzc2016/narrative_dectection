@@ -156,7 +156,7 @@ class App extends React.Component {
 	            <div className='charts'>
 	            	<div>
 			            <GaugeChart id="gauge-chart1" 
-			              nrOfLevels={3} 
+			              nrOfLevels={2} 
 			              animate={false}
 			              percent={(2 * this.state.positive + 1 * this.state.neutral)/(2 * this.state.total)}
 			           	  hideText={true}
