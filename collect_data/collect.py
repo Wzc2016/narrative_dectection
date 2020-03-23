@@ -47,14 +47,14 @@ if __name__ == '__main__':
 		print(sys.argv)
 		raise ValueError("The format should be python3 collect.py KEYWORD COUNT or python3 collect.py KEYWORD")
 
-	hashtag = sys.argv[1]
+	topic = sys.argv[1]
 
 	if len(sys.argv) == 3:
 		count = int(sys.argv[2])
 
 		
 
-		parameters = {"q": hashtag, "count": count, 'result_type': 'recent', 'include_entities': False, 'since_id': since_id}
+		parameters = {"q": topic, "count": count, 'result_type': 'recent', 'include_entities': False, 'since_id': since_id}
 
 		results = make_request(BASE_URL, parameters)
 
@@ -76,7 +76,7 @@ if __name__ == '__main__':
 		extracted_dataframe = pd.DataFrame(data_list,columns=["name","rawTweet","date"])	
 		extracted_dataframe.to_csv("./extracted_data.csv", header=True, index=False, sep="\t")
 	else:
-		parameters = {"q": hashtag, 'result_type': 'recent', 'include_entities': False, 'since_id': since_id}
+		parameters = {"q": topic, 'result_type': 'recent', 'include_entities': False, 'since_id': since_id}
 
 		results = make_request(BASE_URL, parameters)
 		with open('./max_ids.json', 'w') as f2:
