@@ -47,7 +47,7 @@ if __name__ == '__main__':
 		print(sys.argv)
 		raise ValueError("The format should be python3 collect.py KEYWORD COUNT or python3 collect.py KEYWORD")
 
-	hashtag = '#' + sys.argv[1]
+	hashtag = sys.argv[1]
 
 	if len(sys.argv) == 3:
 		count = int(sys.argv[2])

@@ -1,3 +1,0 @@
-{'text': 'RT @KarinateleSUR: #EEUU: Presidente #Trump anuncia el despliegue de la Guardia Nacional a #NewYork, #California y estado de Washington. Lo…', 'id': 1241925506104266758, 'created_at': 'Mon Mar 23 03:11:29 +0000 2020', 'user_id': 139830575}
-{'text': 'RT @PsuvMBI: #GraciasPresidenteMaduro\nEl pueblo de #MBI agradece la lucha de Pdte. @NicolasMaduro por no desampararlos en estos momentos do…', 'id': 1241925503889653764, 'created_at': 'Mon Mar 23 03:11:28 +0000 2020', 'user_id': 1236489007737049089}
-{'text': "RT @cosmicfirepeace: #Trump is a effing disaster ... psychopaths don't care", 'id': 1241925466929258496, 'created_at': 'Mon Mar 23 03:11:19 +0000 2020', 'user_id': 542845380}
