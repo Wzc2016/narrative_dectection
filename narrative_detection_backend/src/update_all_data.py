@@ -7,12 +7,16 @@ import sys
 import requests
 import pandas as pd
 from dateutil.parser import parse
+import pathlib
+
 
 #%%
 if __name__ == '__main__':
     # collect data
     if len(sys.argv) != 2:
         print(sys.argv)
+    
+    
     command_run = os.system("python3 ../../collect_data/collect.py " + sys.argv[1] + " 100")
     
     
@@ -77,7 +81,12 @@ if __name__ == '__main__':
         label_to_date_df = label_to_date_df.replace({'label':{"1":"20","2":"10"}})
         label_to_date_df = label_to_date_df.replace({'label':{"20":"2","10":"1"}})
 
-    label_to_date_df.to_csv("../results/result.csv", header=True, index=False, sep="\t")
+    file = pathlib.Path("../results/"+sys.argv[1]+"result.csv")
+    
+    if file.exists():
+        label_to_date_df.to_csv("../results/"+sys.argv[1]+"result.csv", header=False, index=False, sep="\t", mode="a")
+    else:
+        label_to_date_df.to_csv("../results/"+sys.argv[1]+"result.csv", header=True, index=False, sep="\t", mode="a")
 
 
 # %%
