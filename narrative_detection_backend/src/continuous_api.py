@@ -9,6 +9,7 @@ from bson import ObjectId
 app = Flask(__name__)
 data_path = "/data"
 
+all_topic_list = []
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -28,6 +29,7 @@ class NpEncoder(json.JSONEncoder):
             return super(NpEncoder, self).default(obj)
 
 def start_update(topic):
+    all_topic_list.append(topic)
     pid=os.fork()
     if pid:
         # parent
@@ -35,12 +37,21 @@ def start_update(topic):
     else:
         # child
         command_run = os.system("python3 ./continuous_update.py " + topic)
+        sys.exists
 
 def get_result(topic):
     file = pathlib.Path("../results/statistics/"+topic+"_statistics.json")
     if not file.exists():
         return None
     with open("../results/statistics/"+topic+"_statistics.json", 'r') as f:
+        result_dict = json.load(f)
+    return result_dict
+
+def get_curr_result(topic):
+    file = pathlib.Path("../results/statistics/"+topic+"_curr_statistics.json")
+    if not file.exists():
+        return None
+    with open("../results/statistics/"+topic+"_curr_statistics.json", 'r') as f:
         result_dict = json.load(f)
     return result_dict
 
@@ -56,6 +67,20 @@ def get_result_fun(topic):
     result_dict = get_result(topic)
     if not result_dict:
         return Response("Bad Request! No topic data found!", status=400)
+    return NpEncoder().encode(result_dict),200
+
+@app.route('/get_curr_result/<topic>', methods=['GET'])
+def get_curr_result_fun(topic):
+    if not topic:
+        return Response("Bad Request! No topic specified!", status=400)
+    result_dict = get_curr_result(topic)
+    if not result_dict:
+        return Response("Bad Request! No topic data found!", status=400)
+    return NpEncoder().encode(result_dict),200
+
+@app.route('/get_curr_topics', methods=['GET'])
+def get_curr_topics_fun():
+    result_dict ={"data":all_topic_list}
     return NpEncoder().encode(result_dict),200
 
 if __name__ == '__main__':
