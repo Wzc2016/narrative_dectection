@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Input } from 'semantic-ui-react'
+import { Button, Input, Label, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import GaugeChart from 'react-gauge-chart'
 import Thermometer from 'react-thermometer-component'
@@ -177,6 +177,7 @@ class Realtime extends Component {
                       animate={false}
                       percent={(2 * this.state.positive + 1 * this.state.neutral)/(2 * this.state.total)}
                       hideText={true}
+                      colors={['#FF0000', '#00FF00']}
                     />
                     Sentiment
                   </div>
@@ -212,10 +213,23 @@ class Realtime extends Component {
           </div>
 
           <br/>
-          {`positive: ${this.state.positive}
-            negative: ${this.state.negative}
-            neutral: ${this.state.neutral}
-            total: ${this.state.total}`}
+          <Label color={'green'}>
+            Positive:
+            <Label.Detail>{this.state.positive}</Label.Detail>
+          </Label>
+          <Label color={'red'}>
+            Negative:
+            <Label.Detail>{this.state.negative}</Label.Detail>
+          </Label>
+          <Label >
+            Neutral:
+            <Label.Detail>{this.state.neutral}</Label.Detail>
+          </Label>
+          <Label color={'yellow'}>
+            Total:
+            <Label.Detail>{this.state.total}</Label.Detail>
+          </Label>
+          
           
 
       </div>
