@@ -101,7 +101,7 @@ if __name__ == '__main__':
             
             curr_data_stat = {}
             curr_data_stat['positive'] = len(two_data_list)
-            curr_data_stat['nutral'] = int(label_to_date_df.loc[label_to_date_df["label"]=="0"]["text"].count())
+            curr_data_stat['neutral'] = int(label_to_date_df.loc[label_to_date_df["label"]=="0"]["text"].count())
             curr_data_stat['negative'] = len(one_data_list)
             with open("../results/statistics/"+sys.argv[1]+"_curr_statistics.json", 'w+') as fp:
                 json.dump(curr_data_stat, fp)
@@ -112,7 +112,7 @@ if __name__ == '__main__':
             
             curr_data_stat = {}
             curr_data_stat['negative'] = len(two_data_list)
-            curr_data_stat['nutral'] = int(label_to_date_df.loc[label_to_date_df["label"]=="0"]["text"].count())
+            curr_data_stat['neutral'] = int(label_to_date_df.loc[label_to_date_df["label"]=="0"]["text"].count())
             curr_data_stat['positive'] = len(one_data_list)
             with open("../results/statistics/"+sys.argv[1]+"_curr_statistics.json", 'w+') as fp:
                 json.dump(curr_data_stat, fp)

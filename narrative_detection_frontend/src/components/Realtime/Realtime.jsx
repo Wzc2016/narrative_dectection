@@ -6,7 +6,8 @@ import Thermometer from 'react-thermometer-component'
 
 import './Realtime.css'
 
-var APIUrl = 'http://127.0.0.1:8000/polar_result/';
+var APIUrl_get_curr_result = 'http://127.0.0.1:8000/get_curr_result/';
+var APIUrl_post = 'http://127.0.0.1:8000/start_update/';
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -50,7 +51,7 @@ class Realtime extends Component {
 
 
   GetData() {
-    fetch(APIUrl + this.state.currentTopic)
+    fetch(APIUrl_get_curr_result + this.state.currentTopic)
     .then(res => res.json())
     .then(
       (result) => {
@@ -74,9 +75,14 @@ class Realtime extends Component {
 
     clearInterval(idVar);
 
+
     this.setState({
       displayLoading: true,
+      currentTopic: this.state.value,
     })
+
+    fetch(APIUrl_post + this.state.value, {method: 'POST'});
+
 
     sleep(5000).then(() => {
 
