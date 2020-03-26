@@ -9,7 +9,7 @@ from bson import ObjectId
 app = Flask(__name__)
 data_path = "/data"
 
-all_topic_list = []
+all_topic_set = set()
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -29,15 +29,15 @@ class NpEncoder(json.JSONEncoder):
             return super(NpEncoder, self).default(obj)
 
 def start_update(topic):
-    all_topic_list.append(topic)
+    all_topic_set.add(topic)
     pid=os.fork()
     if pid:
         # parent
-        pass
+        return 1
     else:
         # child
         command_run = os.system("python3 ./continuous_update.py " + topic)
-        sys.exists
+        return 0
 
 def get_result(topic):
     file = pathlib.Path("../results/statistics/"+topic+"_statistics.json")
@@ -57,8 +57,11 @@ def get_curr_result(topic):
 
 @app.route('/start_update/<topic>', methods=['POST'])
 def start_update_fun(topic):
-    start_update(topic)
-    return Response("start to update data for "+topic, status=200)
+    res = start_update(topic)
+    if(res==1):
+        return Response("start to update data for "+topic, status=200)
+    if(res==0):
+        return Response("gathering of "+topic+" is done.", status=200)
 
 @app.route('/get_result/<topic>', methods=['GET'])
 def get_result_fun(topic):
@@ -80,7 +83,7 @@ def get_curr_result_fun(topic):
 
 @app.route('/get_curr_topics', methods=['GET'])
 def get_curr_topics_fun():
-    result_dict ={"data":all_topic_list}
+    result_dict ={"data":list(all_topic_set)}
     return NpEncoder().encode(result_dict),200
 
 if __name__ == '__main__':
