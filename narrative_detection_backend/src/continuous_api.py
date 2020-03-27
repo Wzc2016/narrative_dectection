@@ -5,11 +5,14 @@ import os
 import numpy as np
 import pandas as pd
 import pathlib
+import datetime
+from dateutil.parser import parse
 from bson import ObjectId
 app = Flask(__name__)
 data_path = "/data"
 
 all_topic_set = set()
+current_topic_set = set()
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -29,7 +32,10 @@ class NpEncoder(json.JSONEncoder):
             return super(NpEncoder, self).default(obj)
 
 def start_update(topic):
+    if(topic in current_topic_set):
+        return -1
     all_topic_set.add(topic)
+    current_topic_set.add(topic)
     pid=os.fork()
     if pid:
         # parent
@@ -37,6 +43,7 @@ def start_update(topic):
     else:
         # child
         command_run = os.system("python3 ./continuous_update.py " + topic)
+        current_topic_set.remove(topic)
         return 0
 
 def get_result(topic):
@@ -55,9 +62,36 @@ def get_curr_result(topic):
         result_dict = json.load(f)
     return result_dict
 
+def get_daily_sample(topic):
+    file = pathlib.Path("../results/data/"+topic+"_result.csv")
+    if not file.exists():
+        return None
+    df = pd.read_csv("../results/data/"+topic+"_result.csv", sep="\t")
+    df['date'] = df['date'].apply(lambda x: str(x)[1:12])
+    print(df)
+    result_list =[]
+    start_date = datetime.datetime.strptime(df.iloc[1]["date"],'%Y %b %d')
+    end_date = datetime.datetime.strptime(df.iloc[-1]["date"],'%Y %b %d')
+    curr_date = start_date
+    while curr_date<=end_date:
+        today_dict = {}
+        curr_day_df = df.loc[df['date'] == datetime.datetime.strftime(curr_date,'%Y %b %d')]
+        curr_day_pos = curr_day_df.loc[curr_day_df['label'] == "1"].head(3)
+        curr_day_pos_list = list(curr_day_pos["text"])
+        curr_day_neg = curr_day_df.loc[curr_day_df['label'] == "2"].head(3)
+        curr_day_neg_list = list(curr_day_neg["text"])
+        curr_day_neu = curr_day_df.loc[curr_day_df['label'] == "0"].head(3)
+        curr_day_neu_list = list(curr_day_neu["text"])
+        today_dict = {'positive':curr_day_pos_list, 'neutral':curr_day_neu_list, 'negative':curr_day_neg_list}
+        result_list.append(today_dict)
+        curr_date += datetime.timedelta(days=1)
+    return result_list
+
 @app.route('/start_update/<topic>', methods=['POST'])
 def start_update_fun(topic):
     res = start_update(topic)
+    if(res==-1):
+        return Response("Bad Request! "+topic+" is currently updating!", status=400)
     if(res==1):
         return Response("start to update data for "+topic, status=200)
     if(res==0):
@@ -69,7 +103,7 @@ def get_result_fun(topic):
         return Response("Bad Request! No topic specified!", status=400)
     result_dict = get_result(topic)
     if not result_dict:
-        return Response("Bad Request! No topic data found!", status=400)
+        return Response("Bad Request! Didn't find data for "+topic, status=400)
     return NpEncoder().encode(result_dict),200
 
 @app.route('/get_curr_result/<topic>', methods=['GET'])
@@ -78,12 +112,20 @@ def get_curr_result_fun(topic):
         return Response("Bad Request! No topic specified!", status=400)
     result_dict = get_curr_result(topic)
     if not result_dict:
-        return Response("Bad Request! No topic data found!", status=400)
+        return Response("Bad Request! Didn't find data for "+topic, status=400)
     return NpEncoder().encode(result_dict),200
 
 @app.route('/get_curr_topics', methods=['GET'])
 def get_curr_topics_fun():
     result_dict ={"data":list(all_topic_set)}
+    return NpEncoder().encode(result_dict),200
+
+@app.route('/get_daily_sample/<topic>', methods=['GET'])
+def get_daily_sample_fun(topic):
+    result_list = get_daily_sample(topic)
+    if not result_list:
+        return Response("Bad Request! Didn't find data for "+topic, status=400)
+    result_dict ={"data":result_list}
     return NpEncoder().encode(result_dict),200
 
 if __name__ == '__main__':

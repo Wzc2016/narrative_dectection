@@ -15,6 +15,7 @@ import pathlib
 #%%
 if __name__ == '__main__':
     # collect data
+    flag = 1
     if len(sys.argv) != 2:
         print(sys.argv)
     start_time = time.time()
@@ -120,7 +121,10 @@ if __name__ == '__main__':
         file = pathlib.Path("../results/"+sys.argv[1]+"_result.csv")
         
         if file.exists():
-            label_to_date_df.to_csv("../results/data/"+sys.argv[1]+"_result.csv", header=False, index=False, sep="\t", mode="a")
+            if flag==1:
+                label_to_date_df.to_csv("../results/data/"+sys.argv[1]+"_result.csv", header=True, index=False, sep="\t", mode="w")
+            else:
+                label_to_date_df.to_csv("../results/data/"+sys.argv[1]+"_result.csv", header=False, index=False, sep="\t", mode="a")
         else:
             label_to_date_df.to_csv("../results/data/"+sys.argv[1]+"_result.csv", header=True, index=False, sep="\t", mode="a")
 
