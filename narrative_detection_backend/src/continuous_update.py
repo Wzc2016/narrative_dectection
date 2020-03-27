@@ -18,10 +18,11 @@ if __name__ == '__main__':
     flag = 1
     if len(sys.argv) != 2:
         print(sys.argv)
-    start_time = time.strftime("%b %d %Y",time.time())
+    start_time = time.time()
+    st = datetime.datetime.fromtimestamp(start_time).strftime('%Y-%m-%d')
     hour_count = 0
     total_time = 0
-    init_json = {"start_time":start_time,"data":{"positive":[],"neutral":[],"negative":[],"total":[],"polar":[]}}
+    init_json = {"start_time":st,"data":{"positive":[],"neutral":[],"negative":[],"total":[],"polar":[]}}
     with open("../results/statistics/"+sys.argv[1]+"_statistics.json", 'w+') as fp:
         json.dump(init_json, fp)
     curr_hour_stat = [0,0,0,0,0]
