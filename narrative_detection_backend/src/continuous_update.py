@@ -21,19 +21,24 @@ if __name__ == '__main__':
     start_time = time.time()
     hour_count = 0
     total_time = 0
-    init_json = {"start_time":start_time,"data":[]}
+    init_json = {"start_time":start_time,"data":{"positive":[],"neutral":[],"negative":[],"total":[],"polar":[]}}
     with open("../results/statistics/"+sys.argv[1]+"_statistics.json", 'w+') as fp:
         json.dump(init_json, fp)
-    curr_hour_stat = [0,0,0,0]
+    curr_hour_stat = [0,0,0,0,0]
     while hour_count<10:
-        # positive, neutral, negative, total activity
+        # positive, neutral, negative, total activity, polar
         if(time.time()-start_time>(1+hour_count)*30):
             hour_count+=1
             curr_hour_stat[3] = curr_hour_stat[0]+curr_hour_stat[1]+curr_hour_stat[2]
-            init_json["data"].append(curr_hour_stat)
+            curr_hour_stat[4] = (curr_hour_stat[0]*2+curr_hour_stat[1]*1)/curr_hour_stat[3]*2
+            init_json["data"]["positive"].append(curr_hour_stat[0])
+            init_json["data"]["neutral"].append(curr_hour_stat[1])
+            init_json["data"]["negative"].append(curr_hour_stat[2])
+            init_json["data"]["total"].append(curr_hour_stat[3])
+            init_json["data"]["polar"].append(curr_hour_stat[4])
             with open("../results/statistics/"+sys.argv[1]+"_statistics.json", 'w+') as fp:
                 json.dump(init_json, fp)
-            curr_hour_stat = [0,0,0,0]
+#            curr_hour_stat = [0,0,0,0]
             #write to statistic file
         command_run = os.system("python3 ../../collect_data/collect.py " + sys.argv[1] + " 100")
     #%%
