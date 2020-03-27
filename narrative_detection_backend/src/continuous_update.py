@@ -18,7 +18,7 @@ if __name__ == '__main__':
     flag = 1
     if len(sys.argv) != 2:
         print(sys.argv)
-    start_time = time.time()
+    start_time = time.strftime("%b %d %Y",time.time())
     hour_count = 0
     total_time = 0
     init_json = {"start_time":start_time,"data":{"positive":[],"neutral":[],"negative":[],"total":[],"polar":[]}}
