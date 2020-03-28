@@ -31,7 +31,7 @@ if __name__ == '__main__':
         if(time.time()-start_time>(1+hour_count)*30):
             hour_count+=1
             curr_hour_stat[3] = curr_hour_stat[0]+curr_hour_stat[1]+curr_hour_stat[2]
-            curr_hour_stat[4] = (curr_hour_stat[0]*2+curr_hour_stat[1]*1)/curr_hour_stat[3]*2
+            curr_hour_stat[4] = (curr_hour_stat[0]*2+curr_hour_stat[1]*1)/(curr_hour_stat[3]*2)
             init_json["data"]["positive"].append(curr_hour_stat[0])
             init_json["data"]["neutral"].append(curr_hour_stat[1])
             init_json["data"]["negative"].append(curr_hour_stat[2])
