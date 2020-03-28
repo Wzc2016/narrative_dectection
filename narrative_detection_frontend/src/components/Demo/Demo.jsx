@@ -17,67 +17,10 @@ import HighchartsReact from 'highcharts-react-official'
 
 var APIUrl_get_curr_topics = 'http://127.0.0.1:8000/get_curr_topics';
 var APIUrl_get_daily_sample = 'http://127.0.0.1:8000/get_daily_sample';
+var APIUrl_get_result = 'http://127.0.0.1:8000/get_result/';
 var beginDate = '01242020';
 var endDate = '02162020';
 
-const options = {
-
-  title: {
-    text: 'Sentiment by hours'
-  },
-
-  subtitle: {
-    text: 'Source: Twitter'
-  },
-
-  yAxis: {
-    title: {
-      text: 'Number of Posts'
-    }
-  },
-
-  xAxis: {
-    accessibility: {
-      rangeDescription: 'Range: 2010 to 2017'
-    }
-  },
-
-  legend: {
-    layout: 'vertical',
-    align: 'right',
-    verticalAlign: 'middle'
-  },
-
-  plotOptions: {
-    series: {
-      label: {
-        connectorAllowed: false
-      },
-      pointStart: 0
-    }
-  },
-
-  series: [{
-    name: 'Positive',
-    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
-  }],
-
-  responsive: {
-    rules: [{
-      condition: {
-        maxWidth: 500
-      },
-      chartOptions: {
-        legend: {
-          layout: 'horizontal',
-          align: 'center',
-          verticalAlign: 'bottom'
-        }
-      }
-    }]
-  }
-
-};
 
 
 
@@ -95,6 +38,11 @@ class App extends React.Component {
       neutral_sample: [],
       pro_sample: [],
       anti_sample: [],
+      neutral_list: [],
+      positive_list: [],
+      negative_list: [],
+      total_list: [],
+      polar: 0,
     };
     this.sliderHandler = this.sliderHandler.bind(this);
     this.sliderTxtHandler = this.sliderTxtHandler.bind(this);
@@ -179,6 +127,23 @@ class App extends React.Component {
       })
 
       this.fetch_sample_data(value);
+
+      fetch(APIUrl_get_result + value)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          // console.log(result.data.length , this.state.sliderVal)
+          this.setState({
+            positive_list: result.data.positive,
+            neutral_list: result.data.neutral,
+            negative_list: result.data.negative,
+            total_list: result.data.total,
+            polar: result.data.polar,
+          })
+          
+        });
+
+
     }
 
   
@@ -195,6 +160,134 @@ class App extends React.Component {
     
 
   render() {
+
+    const activityOptions = {
+
+        title: {
+          text: 'Activity by hours'
+        },
+
+        subtitle: {
+          text: 'Source: Twitter'
+        },
+
+        yAxis: {
+          title: {
+            text: 'Number of Posts'
+          }
+        },
+
+        xAxis: {
+          accessibility: {
+            rangeDescription: 'Range: 2010 to 2017'
+          }
+        },
+
+        legend: {
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'middle'
+        },
+
+        plotOptions: {
+          series: {
+            label: {
+              connectorAllowed: false
+            },
+            pointStart: 0
+          }
+        },
+
+        series: [{
+          name: 'Positive',
+          data: this.state.positive_list,
+        },{
+          name: 'Negative',
+          data: this.state.negative_list,
+        },{
+          name: 'Neutral',
+          data: this.state.neutral_list,
+        }],
+
+        responsive: {
+          rules: [{
+            condition: {
+              maxWidth: 500
+            },
+            chartOptions: {
+              legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom'
+              }
+            }
+          }]
+        }
+
+      };
+
+      const sentimentOptions = {
+
+        title: {
+          text: 'Sentiment by hours'
+        },
+
+        subtitle: {
+          text: 'Source: Twitter'
+        },
+
+        yAxis: {
+          title: {
+            text: 'Support Rate'
+          }
+        },
+
+        xAxis: {
+          accessibility: {
+            rangeDescription: 'Range: 2010 to 2017'
+          }
+        },
+
+        legend: {
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'middle'
+        },
+
+        plotOptions: {
+          series: {
+            label: {
+              connectorAllowed: false
+            },
+            pointStart: 0
+          }
+        },
+
+        series: [{
+          name: 'Support Rate',
+          data: this.state.polar,
+        }],
+
+        responsive: {
+          rules: [{
+            condition: {
+              maxWidth: 500
+            },
+            chartOptions: {
+              legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom'
+              }
+            }
+          }]
+        }
+
+      };
+
+
+
+
   	const { error, isLoaded} = this.state;
 
     const topicOptions = this.state.topics.map((e) => {
@@ -215,7 +308,7 @@ class App extends React.Component {
 
 
     const TableExampleDefinition = (
-      <Table celled structured>
+      <Table celled structured className='tweet_table'>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Beliefs</Table.HeaderCell>
@@ -321,20 +414,22 @@ class App extends React.Component {
                 marks={marks}
                 defaultValue={this.state.sliderVal}/>
               </div>
-
+              <br/>
 
               {TableExampleDefinition}
 
+              <br/>
+              <br/>
 
             <HighchartsReact
               className='topic-box'
               highcharts={Highcharts}
-              options={options}
+              options={activityOptions}
             />
             <HighchartsReact
               className='topic-box'
               highcharts={Highcharts}
-              options={options}
+              options={sentimentOptions}
             />
 	        </div>
 	    );

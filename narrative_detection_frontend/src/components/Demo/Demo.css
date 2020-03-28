@@ -81,5 +81,11 @@ h1{
 .topic-box {
   max-width: 500px !important;
   display: inline-block !important;
+  
 
+}
+
+.tweet_table {
+  margin: auto !important;
+  width: 90% !important;
 }
