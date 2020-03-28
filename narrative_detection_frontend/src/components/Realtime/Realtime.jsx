@@ -147,9 +147,9 @@ class Realtime extends Component {
           </Button>
         </Link>
         <Button.Or />
-        <Link to={process.env.PUBLIC_URL + "/Demo"} onClick={() => {clearInterval(idVar); }}>
+        <Link to={process.env.PUBLIC_URL + "/Archive"} onClick={() => {clearInterval(idVar); }}>
           <Button>
-            Demo
+            Archive
           </Button>
         </Link>
       </Button.Group>

@@ -43,6 +43,7 @@ class App extends React.Component {
       negative_list: [],
       total_list: [],
       polar: 0,
+      begin_date: 'Loading...'
     };
     this.sliderHandler = this.sliderHandler.bind(this);
     this.sliderTxtHandler = this.sliderTxtHandler.bind(this);
@@ -139,6 +140,7 @@ class App extends React.Component {
             negative_list: result.data.negative,
             total_list: result.data.total,
             polar: result.data.polar,
+            begin_date: result.start_time,
           })
           
         });
@@ -178,8 +180,8 @@ class App extends React.Component {
         },
 
         xAxis: {
-          accessibility: {
-            rangeDescription: 'Range: 2010 to 2017'
+          title: {
+            text: 'Number of Hours'
           }
         },
 
@@ -243,8 +245,8 @@ class App extends React.Component {
         },
 
         xAxis: {
-          accessibility: {
-            rangeDescription: 'Range: 2010 to 2017'
+          title: {
+            text: 'Number of Hours'
           }
         },
 
@@ -298,7 +300,7 @@ class App extends React.Component {
     const marks = [
       {
         value: 1,
-        label: '1st Day',
+        label: '1st Day (' + this.state.begin_date + ')',
       },
       {
         value: 15,
@@ -376,9 +378,9 @@ class App extends React.Component {
                 </Button>
               </Link>
               <Button.Or />
-              <Link to={process.env.PUBLIC_URL + "/Demo"}>
+              <Link to={process.env.PUBLIC_URL + "/Archive"}>
                 <Button>
-                  Demo
+                  Archive
                 </Button>
               </Link>
             </Button.Group>
