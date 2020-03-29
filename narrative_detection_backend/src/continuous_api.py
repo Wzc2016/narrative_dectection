@@ -17,7 +17,7 @@ data_path = "/data"
 
 child_id_dict = {}
 all_topic_set = set()
-current_topic_set = set()
+#current_topic_list = []
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -44,18 +44,23 @@ def check_pid(pid):
     else:
         return True
 
-def check_childs():
-    for pid in child_id_dict:
-        if not check_pid(pid):
-            current_topic_set.remove(child_id_dict[pid])
-            del child_id_dict[pid]
+def get_current_topic():
+    result_list = []
+    with open("current_topic.txt", "r") as f:
+        str = f.read()
+    return str.split('\n')
+
+def update_current_topic(l):
+    with open("current_topic.txt", "w") as f:
+        str = f.write('\n'.join(l))
 
 def start_update(topic):
-    check_childs()
-    if(topic in current_topic_set):
+    current_topic_list = get_current_topic()
+    if(topic in current_topic_list):
         return -1
     all_topic_set.add(topic)
-    current_topic_set.add(topic)
+    current_topic_list.append(topic)
+    update_current_topic(current_topic_list)
     pid=os.fork()
     if pid:
         # parent
@@ -64,10 +69,12 @@ def start_update(topic):
     else:
         # child
         command_run = os.system("python3 ./continuous_update.py " + topic)
+        current_topic_list = get_current_topic()
+        current_topic_list.remove(topic)
+        update_current_topic(current_topic_list)
         return 0
 
 def get_result(topic):
-    check_childs()
     file = pathlib.Path("../results/statistics/"+topic+"_statistics.json")
     if not file.exists():
         return None
@@ -76,7 +83,6 @@ def get_result(topic):
     return result_dict
 
 def get_curr_result(topic):
-    check_childs()
     file = pathlib.Path("../results/statistics/"+topic+"_curr_statistics.json")
     if not file.exists():
         return None
@@ -85,7 +91,6 @@ def get_curr_result(topic):
     return result_dict
 
 def get_daily_sample(topic):
-    check_childs()
     file = pathlib.Path("../results/data/"+topic+"_result.csv")
     if not file.exists():
         return None
@@ -140,7 +145,7 @@ def get_curr_result_fun(topic):
 
 @app.route('/get_curr_topics', methods=['GET'])
 def get_curr_topics_fun():
-    result_dict ={"data":list(current_topic_set)}
+    result_dict ={"data":cuurrent_topic_list}
     return NpEncoder().encode(result_dict),200
 
 @app.route('/get_all_topics', methods=['GET'])
