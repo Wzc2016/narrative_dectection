@@ -181,7 +181,7 @@ class App extends React.Component {
 
         xAxis: {
           title: {
-            text: 'Number of Hours'
+            text: 'Number of Hours from ' + this.state.begin_date
           }
         },
 
@@ -246,7 +246,7 @@ class App extends React.Component {
 
         xAxis: {
           title: {
-            text: 'Number of Hours'
+            text: 'Number of Hours from ' + this.state.begin_date
           }
         },
 
