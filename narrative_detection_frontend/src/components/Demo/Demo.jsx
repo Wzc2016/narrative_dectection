@@ -331,7 +331,7 @@ class App extends React.Component {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell rowSpan='3'>{'Pro-' + this.state.curr_topic}</Table.Cell>            
+            <Table.Cell rowSpan='3'>Positive</Table.Cell>            
             <Table.Cell>{this.state.pro_sample[0]}</Table.Cell>
           </Table.Row>
           <Table.Row>
@@ -342,7 +342,7 @@ class App extends React.Component {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell rowSpan='3'>{'Anti-' + this.state.curr_topic}</Table.Cell>            
+            <Table.Cell rowSpan='3'>Negative</Table.Cell>            
             <Table.Cell>{this.state.anti_sample[0]}</Table.Cell>
           </Table.Row>
           <Table.Row>
