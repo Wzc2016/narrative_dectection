@@ -15,14 +15,11 @@ import { Link } from 'react-router-dom'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 
-var APIUrl_get_curr_topics = 'http://127.0.0.1:8000/get_curr_topics';
+var APIUrl_get_curr_topics = 'http://127.0.0.1:8000/get_all_topics';
 var APIUrl_get_daily_sample = 'http://127.0.0.1:8000/get_daily_sample';
 var APIUrl_get_result = 'http://127.0.0.1:8000/get_result/';
 var beginDate = '01242020';
 var endDate = '02162020';
-
-
-
 
 
 class App extends React.Component {
