@@ -18,9 +18,9 @@ import 'katex/dist/katex.min.css'
 import Latex from 'react-latex-next'
 
 
-var APIUrl_get_curr_topics = 'http://127.0.0.1:8000/get_all_topics';
-var APIUrl_get_daily_sample = 'http://127.0.0.1:8000/get_daily_sample';
-var APIUrl_get_result = 'http://127.0.0.1:8000/get_result/';
+var APIUrl_get_curr_topics = 'http://apollo5.cs.illinois.edu:8000/get_all_topics';
+var APIUrl_get_daily_sample = 'http://apollo5.cs.illinois.edu:8000/get_daily_sample';
+var APIUrl_get_result = 'http://apollo5.cs.illinois.edu:8000/get_result/';
 var beginDate = '01242020';
 var endDate = '02162020';
 
