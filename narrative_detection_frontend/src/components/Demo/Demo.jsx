@@ -208,11 +208,11 @@ class App extends React.Component {
           name: 'Positive',
           data: this.state.positive_list,
         },{
-          name: 'Negative',
-          data: this.state.negative_list,
-        },{
           name: 'Neutral',
           data: this.state.neutral_list,
+        },{
+          name: 'Negative',
+          data: this.state.negative_list,
         }],
 
         responsive: {
