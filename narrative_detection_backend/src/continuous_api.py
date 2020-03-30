@@ -145,7 +145,7 @@ def get_curr_result_fun(topic):
 
 @app.route('/get_curr_topics', methods=['GET'])
 def get_curr_topics_fun():
-    result_dict ={"data":cuurrent_topic_list}
+    result_dict ={"data":get_current_topic()}
     return NpEncoder().encode(result_dict),200
 
 @app.route('/get_all_topics', methods=['GET'])
