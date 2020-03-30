@@ -115,6 +115,14 @@ def get_daily_sample(topic):
         curr_date += datetime.timedelta(days=1)
     return result_list
 
+def get_curr_sample(topic):
+    file = pathlib.Path("../results/data/"+topic+"_curr_sample.json")
+    if not file.exists():
+        return None
+    with open("../results/data/"+topic+"_curr_sample.json", 'r') as f:
+        result_dict = json.load(f)
+    return result_dict
+
 @app.route('/start_update/<topic>', methods=['POST'])
 def start_update_fun(topic):
     res = start_update(topic)
@@ -145,7 +153,7 @@ def get_curr_result_fun(topic):
 
 @app.route('/get_curr_topics', methods=['GET'])
 def get_curr_topics_fun():
-    result_dict ={"data":get_current_topic()}
+    result_dict ={"data":cuurrent_topic_list}
     return NpEncoder().encode(result_dict),200
 
 @app.route('/get_all_topics', methods=['GET'])
@@ -160,6 +168,15 @@ def get_daily_sample_fun(topic):
     if not result_list:
         return Response("Bad Request! Didn't find data for "+topic, status=400)
     result_dict ={"data":result_list}
+    return NpEncoder().encode(result_dict),200
+
+@app.route('/get_curr_sample/<topic>', methods=['GET'])
+def get_curr_sample_fun(topic):
+    if not topic:
+        return Response("Bad Request! No topic specified!", status=400)
+    result_dict = get_curr_sample(topic)
+    if not result_dict:
+        return Response("Bad Request! Didn't find data for "+topic, status=400)
     return NpEncoder().encode(result_dict),200
 
 if __name__ == '__main__':

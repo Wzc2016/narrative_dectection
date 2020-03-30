@@ -75,6 +75,7 @@ if __name__ == '__main__':
                 }
             )
         )
+        
         if(len(one_data_list)==0):
             print("one_data_list null")
             one_avg_polarize = 2
@@ -102,6 +103,7 @@ if __name__ == '__main__':
         if (two_avg_polarize>one_avg_polarize):
             label_to_date_df = label_to_date_df.replace({'label':{"1":"20","2":"10"}})
             label_to_date_df = label_to_date_df.replace({'label':{"20":"2","10":"1"}})
+            
             curr_hour_stat[0] += len(two_data_list)
             curr_hour_stat[1] += int(label_to_date_df.loc[label_to_date_df["label"]=="0"]["text"].count())
             curr_hour_stat[2] += len(one_data_list)
@@ -112,6 +114,14 @@ if __name__ == '__main__':
             curr_data_stat['negative'] = len(one_data_list)
             with open("../results/statistics/"+sys.argv[1]+"_curr_statistics.json", 'w+') as fp:
                 json.dump(curr_data_stat, fp)
+            
+            current_sample_dict = {}
+            current_sample_dict['positive'] = list(label_to_date_df.loc[label_to_date_df["label"]=="2"].head(3)["text"])
+            current_sample_dict['neutral'] = list(label_to_date_df.loc[label_to_date_df["label"]=="0"].head(3)["text"])
+            current_sample_dict['negative'] = list(label_to_date_df.loc[label_to_date_df["label"]=="1"].head(3)["text"])
+            with open("../results/data/"+sys.argv[1]+"_curr_sample.json", 'w+') as fp:
+                json.dump(current_sample_dict, fp)
+            
         else:
             curr_hour_stat[2] += len(two_data_list)
             curr_hour_stat[1] += int(label_to_date_df.loc[label_to_date_df["label"]=="0"]["text"].count())
@@ -124,6 +134,13 @@ if __name__ == '__main__':
             with open("../results/statistics/"+sys.argv[1]+"_curr_statistics.json", 'w+') as fp:
                 json.dump(curr_data_stat, fp)
 
+            current_sample_dict = {}
+            current_sample_dict['positive'] = list(label_to_date_df.loc[label_to_date_df["label"]=="1"].head(3)["text"])
+            current_sample_dict['neutral'] = list(label_to_date_df.loc[label_to_date_df["label"]=="0"].head(3)["text"])
+            current_sample_dict['negative'] = list(label_to_date_df.loc[label_to_date_df["label"]=="2"].head(3)["text"])
+            with open("../results/data/"+sys.argv[1]+"_curr_sample.json", 'w+') as fp:
+                json.dump(current_sample_dict, fp)
+
         file = pathlib.Path("../results/"+sys.argv[1]+"_result.csv")
         
         if file.exists():
@@ -135,23 +152,3 @@ if __name__ == '__main__':
             label_to_date_df.to_csv("../results/data/"+sys.argv[1]+"_result.csv", header=True, index=False, sep="\t", mode="a")
 
         time.sleep(5)
-
-# %%
-# from dateutil.parser import parse
-# parse("Feb_15_2020")
-
-# # %%
-# if __name__ == '__main__':
-    
-#     r = requests.post(
-#         "http://www.sentiment140.com/api/bulkClassifyJson?appid=ajing2@illinois.edu ",
-#         data=json.dumps
-#         (
-#             {
-#             "data": [{"text": "I love Titanic.", "query":"Titanic"}, 
-#                      {"text": "Titanic is an American movie"},
-#                      {"text": "I hate Titanic.", "query":"Titanic"}]
-#             }
-#         )
-#     )
-#     print(r.json())
