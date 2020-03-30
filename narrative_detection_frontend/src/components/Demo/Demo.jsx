@@ -166,7 +166,7 @@ class App extends React.Component {
     const activityOptions = {
 
         title: {
-          text: 'Activity by hours'
+          text: 'Activity by Hours'
         },
 
         subtitle: {
@@ -181,7 +181,7 @@ class App extends React.Component {
 
         xAxis: {
           title: {
-            text: 'Number of Hours from ' + this.state.begin_date
+            text: 'From ' + this.state.begin_date + ' (Hours)'
           }
         },
 
@@ -189,6 +189,10 @@ class App extends React.Component {
           layout: 'vertical',
           align: 'right',
           verticalAlign: 'middle'
+        },
+
+        credits: {
+          enabled: false
         },
 
         plotOptions: {
@@ -235,14 +239,14 @@ class App extends React.Component {
             type: 'area'
         },
         title: {
-            text: 'Sentiment Distribution by hours'
+            text: 'Sentiment Distribution by Hours'
         },
         subtitle: {
             text: 'Source: Twitter'
         },
         xAxis: {
              title: {
-                text: 'Number of Hours from ' + this.state.begin_date
+                text: 'From ' + this.state.begin_date + ' (Hours)'
               }
         },
         yAxis: {
@@ -253,6 +257,18 @@ class App extends React.Component {
                 text: 'Sentiment Ratio'
             }
         },
+
+        legend: {
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'middle'
+        },
+
+        credits: {
+          enabled: false
+        },
+
+
         tooltip: {
             pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.0f})<br/>',
             split: true
