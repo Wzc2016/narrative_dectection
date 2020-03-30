@@ -89,3 +89,11 @@ h1{
   margin: auto !important;
   width: 90% !important;
 }
+
+.sample-tweets {
+  border-radius: 25px;
+  margin: 0 30px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  border: 1px solid grey;
+}

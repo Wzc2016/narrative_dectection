@@ -425,21 +425,21 @@ class App extends React.Component {
             <br/>
             <br/>
 
+            <div className='sample-tweets'>
+              <div className='date-slider'>
+                  <Slider className='slider'
+                  onChange={this.sliderHandler}
+                  getAriaValueText={this.valuetext}
+                  valueLabelDisplay="on"
+                  max={15}
+                  min={1}
+                  marks={marks}
+                  defaultValue={this.state.sliderVal}/>
+                </div>
+                <br/>
 
-            <div className='date-slider'>
-                <Slider className='slider'
-                onChange={this.sliderHandler}
-                getAriaValueText={this.valuetext}
-                valueLabelDisplay="on"
-                max={15}
-                min={1}
-                marks={marks}
-                defaultValue={this.state.sliderVal}/>
+                {TableExampleDefinition}
               </div>
-              <br/>
-
-              {TableExampleDefinition}
-
               <br/>
               <br/>
 
