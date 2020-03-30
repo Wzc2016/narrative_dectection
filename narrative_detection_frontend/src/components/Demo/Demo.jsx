@@ -230,60 +230,64 @@ class App extends React.Component {
 
       const sentimentOptions = {
 
+
+        chart: {
+            type: 'area'
+        },
         title: {
-          text: 'Sentiment by hours'
+            text: 'Sentiment Distribution by hours'
         },
-
         subtitle: {
-          text: 'Source: Twitter'
+            text: 'Source: Twitter'
         },
-
-        yAxis: {
-          title: {
-            text: 'Support Rate'
-          }
-        },
-
         xAxis: {
-          title: {
-            text: 'Number of Hours from ' + this.state.begin_date
-          }
-        },
-
-        legend: {
-          layout: 'vertical',
-          align: 'right',
-          verticalAlign: 'middle'
-        },
-
-        plotOptions: {
-          series: {
-            label: {
-              connectorAllowed: false
-            },
-            pointStart: 0
-          }
-        },
-
-        series: [{
-          name: 'Support Rate',
-          data: this.state.polar,
-        }],
-
-        responsive: {
-          rules: [{
-            condition: {
-              maxWidth: 500
-            },
-            chartOptions: {
-              legend: {
-                layout: 'horizontal',
-                align: 'center',
-                verticalAlign: 'bottom'
+             title: {
+                text: 'Number of Hours from ' + this.state.begin_date
               }
+        },
+        yAxis: {
+            labels: {
+                format: '{value}%'
+            },
+            title: {
+                text: 'Sentiment Ratio'
             }
-          }]
-        }
+        },
+        tooltip: {
+            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.0f})<br/>',
+            split: true
+        },
+        plotOptions: {
+            area: {
+                stacking: 'percent',
+                lineColor: '#ffffff',
+                lineWidth: 1,
+                marker: {
+                    lineWidth: 1,
+                    lineColor: '#ffffff'
+                },
+                accessibility: {
+                    pointDescriptionFormatter: function (point) {
+                        function round(x) {
+                            return Math.round(x * 100) / 100;
+                        }
+                        return (point.index + 1) + ', ' + point.category + ', ' +
+                            point.y + ' millions, ' + round(point.percentage) + '%, ' +
+                            point.series.name;
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Positive',
+            data: this.state.positive_list,
+        }, {
+            name: 'Neutral',
+            data: this.state.neutral_list,
+        }, {
+            name: 'Negative',
+            data: this.state.negative_list,
+        }]
 
       };
 
@@ -433,10 +437,6 @@ class App extends React.Component {
               highcharts={Highcharts}
               options={sentimentOptions}
             />
-
-            <Latex>
-              {LaTeX}
-            </Latex>
 
            <br/>
            <br/>

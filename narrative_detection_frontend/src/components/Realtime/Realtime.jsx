@@ -6,8 +6,12 @@ import Thermometer from 'react-thermometer-component'
 
 import './Realtime.css'
 
-var APIUrl_get_curr_result = 'http://apollo5.cs.illinois.edu:8000/get_curr_result/';
-var APIUrl_post = 'http://apollo5.cs.illinois.edu:8000/start_update/';
+// var APIUrl_get_curr_result = 'http://apollo5.cs.illinois.edu:8000/get_curr_result/';
+// var APIUrl_post = 'http://apollo5.cs.illinois.edu:8000/start_update/';
+
+var APIUrl_get_curr_result = 'http://127.0.0.1:8000/get_curr_result/';
+var APIUrl_post = 'http://127.0.0.1:8000/start_update/';
+var APIUrl_curr_sample = 'http://127.0.0.1:8000/get_curr_sample/';
 
 // var host = '127.0.0.1';
 // // Listen on a specific port via the PORT environment variable
@@ -21,9 +25,6 @@ var APIUrl_post = 'http://apollo5.cs.illinois.edu:8000/start_update/';
 // }).listen(port, host, function() {
 //     console.log('Running CORS Anywhere on ' + host + ':' + port);
 // });
-
-
-
 
 
 const sleep = (milliseconds) => {
@@ -89,6 +90,19 @@ class Realtime extends Component {
         // console.log(this.state.total, this.state.positive, this.state.negative, this.state.neutral);
       }
     );
+
+    fetch(APIUrl_curr_sample + this.state.currentTopic)
+    .then(res => res.json())
+    .then(
+      (result) => {
+        this.setState({
+              neutral_sample: result.neutral,
+              pro_sample: result.positive,
+              anti_sample: result.negative,
+          })
+        }
+      )
+
   }
 
   clickHandler() {
