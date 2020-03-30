@@ -14,6 +14,9 @@ import { Button, Input, Dropdown, Table } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
+import 'katex/dist/katex.min.css'
+import Latex from 'react-latex-next'
+
 
 var APIUrl_get_curr_topics = 'http://127.0.0.1:8000/get_all_topics';
 var APIUrl_get_daily_sample = 'http://127.0.0.1:8000/get_daily_sample';
@@ -285,7 +288,7 @@ class App extends React.Component {
       };
 
 
-
+      const LaTeX = 'We calculate the $Support$ $Rate$ by formula $(2$ $\\times$ $#Positive$ $+$ $#Neutral$)$/$ (2 $\\times$ #Total)'
 
   	const { error, isLoaded} = this.state;
 
@@ -430,7 +433,14 @@ class App extends React.Component {
               highcharts={Highcharts}
               options={sentimentOptions}
             />
-	        </div>
+
+            <Latex>
+              {LaTeX}
+            </Latex>
+
+           <br/>
+           <br/>
+          </div>
 	    );
 	  }
 	}

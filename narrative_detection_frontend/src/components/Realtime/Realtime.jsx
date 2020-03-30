@@ -1,13 +1,30 @@
 import React, { Component } from 'react'
-import { Button, Input, Label, Icon } from 'semantic-ui-react'
+import { Table, Button, Input, Label, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import GaugeChart from 'react-gauge-chart'
 import Thermometer from 'react-thermometer-component'
 
 import './Realtime.css'
 
-var APIUrl_get_curr_result = 'http://127.0.0.1:8000/get_curr_result/';
-var APIUrl_post = 'http://127.0.0.1:8000/start_update/';
+var APIUrl_get_curr_result = 'http://apollo5.cs.illinois.edu:8000/get_curr_result/';
+var APIUrl_post = 'http://apollo5.cs.illinois.edu:8000/start_update/';
+
+// var host = '127.0.0.1';
+// // Listen on a specific port via the PORT environment variable
+// var port = 8000;
+ 
+// var cors_proxy = require('cors-anywhere');
+// cors_proxy.createServer({
+//     originWhitelist: [], // Allow all origins
+//     requireHeader: ['origin', 'x-requested-with'],
+//     removeHeaders: ['cookie', 'cookie2']
+// }).listen(port, host, function() {
+//     console.log('Running CORS Anywhere on ' + host + ':' + port);
+// });
+
+
+
+
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -40,6 +57,9 @@ class Realtime extends Component {
       activity: 0,
       displayCharts: false,
       displayLoading: false,
+      neutral_sample: [],
+      pro_sample: [],
+      anti_sample: [],
     }
 
     this.keyPressHandler = this.keyPressHandler.bind(this);
@@ -134,6 +154,55 @@ class Realtime extends Component {
   }
 
   render() {
+
+    const TableExampleDefinition = (
+      <Table celled structured className='tweet_table'>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>Beliefs</Table.HeaderCell>
+            <Table.HeaderCell>Sample Tweets</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell rowSpan='3'>Neutral</Table.Cell>            
+            <Table.Cell>{this.state.neutral_sample[0]}</Table.Cell>
+          </Table.Row>
+          <Table.Row>
+              <Table.Cell>{this.state.neutral_sample[1]}</Table.Cell>
+          </Table.Row>
+          <Table.Row>
+              <Table.Cell>{this.state.neutral_sample[2]}</Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell rowSpan='3'>Positive</Table.Cell>            
+            <Table.Cell>{this.state.pro_sample[0]}</Table.Cell>
+          </Table.Row>
+          <Table.Row>
+              <Table.Cell>{this.state.pro_sample[1]}</Table.Cell>
+          </Table.Row>
+          <Table.Row>
+              <Table.Cell>{this.state.anti_sample[2]}</Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell rowSpan='3'>Negative</Table.Cell>            
+            <Table.Cell>{this.state.anti_sample[0]}</Table.Cell>
+          </Table.Row>
+          <Table.Row>
+              <Table.Cell>{this.state.anti_sample[1]}</Table.Cell>
+          </Table.Row>
+          <Table.Row>
+              <Table.Cell>{this.state.anti_sample[2]}</Table.Cell>
+          </Table.Row>
+
+        </Table.Body>
+      </Table>
+      );
+
+
     var displayTime = {display: this.state.displayTime ? 'block' : 'none' };
     var displayCharts = {display: this.state.displayCharts ? 'block' : 'none' }
     var displayLoading = {display: this.state.displayLoading ? 'block' : 'none' }
@@ -229,8 +298,13 @@ class Realtime extends Component {
             Total:
             <Label.Detail>{this.state.total}</Label.Detail>
           </Label>
-          
-          
+          <br/>
+          <br/>
+          <br/>
+          {TableExampleDefinition}
+          <br/>
+          <br/>
+          <br/>
 
       </div>
     )
