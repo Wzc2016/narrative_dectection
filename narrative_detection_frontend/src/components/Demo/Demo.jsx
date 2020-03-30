@@ -317,7 +317,7 @@ class App extends React.Component {
       <Table celled structured className='tweet_table'>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell>Beliefs</Table.HeaderCell>
+            <Table.HeaderCell>Attitude</Table.HeaderCell>
             <Table.HeaderCell>Sample Tweets</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
