@@ -26,7 +26,8 @@ if __name__ == '__main__':
     with open("../results/statistics/"+sys.argv[1]+"_statistics.json", 'w+') as fp:
         json.dump(init_json, fp)
     curr_hour_stat = [0,0,0,0,0]
-    while hour_count<10:
+#    while hour_count<10:
+    while True:
         # positive, neutral, negative, total activity, polar
         if(time.time()-start_time>(1+hour_count)*30):
             hour_count+=1

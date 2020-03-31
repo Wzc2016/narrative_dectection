@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 import pathlib
 import datetime
+import subprocess
+import signal
 from dateutil.parser import parse
 from bson import ObjectId
 from os import listdir
@@ -17,6 +19,7 @@ data_path = "/data"
 
 child_id_dict = {}
 all_topic_set = set()
+current_topic_set = set()
 #current_topic_list = []
 
 class JSONEncoder(json.JSONEncoder):
@@ -36,6 +39,9 @@ class NpEncoder(json.JSONEncoder):
         else:
             return super(NpEncoder, self).default(obj)
 
+def parse_topic(topic):
+    topic.replace("_"," ")
+
 def check_pid(pid):
     try:
         os.kill(pid, 0)
@@ -44,35 +50,58 @@ def check_pid(pid):
     else:
         return True
 
-def get_current_topic():
-    result_list = []
-    with open("current_topic.txt", "r") as f:
-        str = f.read()
-    return str.split('\n')
+def kill_process(process):
+    try:
+        process.kill()
+        return 1
+    except:
+        return 0
 
-def update_current_topic(l):
-    with open("current_topic.txt", "w") as f:
-        str = f.write('\n'.join(l))
+
+def get_current_topic():
+    return list(current_topic_set)
 
 def start_update(topic):
-    current_topic_list = get_current_topic()
-    if(topic in current_topic_list):
+    if(topic in current_topic_set):
         return -1
     all_topic_set.add(topic)
-    current_topic_list.append(topic)
-    update_current_topic(current_topic_list)
-    pid=os.fork()
-    if pid:
-        # parent
-        child_id_dict[pid] = topic
-        return 1
-    else:
-        # child
-        command_run = os.system("python3 ./continuous_update.py " + topic)
-        current_topic_list = get_current_topic()
-        current_topic_list.remove(topic)
-        update_current_topic(current_topic_list)
+    current_topic_set.add(topic)
+    process = subprocess.Popen(["python3","./continuous_update.py", topic])
+    child_id_dict[topic] = process
+    return 1
+#    pid=os.fork()
+#    if pid:
+#        # parent
+#        child_id_dict[topic] = pid
+#        return 1
+#    else:
+#        # child
+#        process = subprocess.Popen(["python3 ./continuous_update.py ", topic])
+##        command_run = os.system("python3 ./continuous_update.py " + topic)
+#        return 0
+
+def stop_update(topic):
+    if topic not in current_topic_set:
+        return -1
+    topic_pid = child_id_dict[topic]
+    result = kill_process(topic_pid)
+    if result==1:
+        current_topic_set.remove(topic)
         return 0
+    else:
+        return 1
+
+def delete_topic(topic):
+    all_topic_list = [f[0:-11] for f in listdir("../results/data/") if (isfile(join("../results/data/", f)) and f[-1]=="v")]
+    if topic not in all_topic_list:
+        return -1
+    os.remove("../results/statistics/"+topic+"_statistics.json")
+    os.remove("../results/data/"+topic+"_result.csv")
+    if pathlib.Path("../results/statistics/"+topic+"_curr_statistics.json").exists():
+        os.remove("../results/statistics/"+topic+"_curr_statistics.json")
+    if pathlib.Path("../results/data/"+topic+"_curr_sample.json").exists():
+        os.remove("../results/data/"+topic+"_curr_sample.json")
+    return 0
 
 def get_result(topic):
     file = pathlib.Path("../results/statistics/"+topic+"_statistics.json")
@@ -90,7 +119,7 @@ def get_curr_result(topic):
         result_dict = json.load(f)
     return result_dict
 
-def get_daily_sample(topic):
+def get_daily_sample(topic, num):
     file = pathlib.Path("../results/data/"+topic+"_result.csv")
     if not file.exists():
         return None
@@ -104,11 +133,11 @@ def get_daily_sample(topic):
     while curr_date<=end_date:
         today_dict = {}
         curr_day_df = df.loc[df['date'] == datetime.datetime.strftime(curr_date,'%Y %b %d')]
-        curr_day_pos = curr_day_df.loc[curr_day_df['label'] == "1"].head(3)
+        curr_day_pos = curr_day_df.loc[curr_day_df['label'] == "1"].head(num)
         curr_day_pos_list = list(curr_day_pos["text"])
-        curr_day_neg = curr_day_df.loc[curr_day_df['label'] == "2"].head(3)
+        curr_day_neg = curr_day_df.loc[curr_day_df['label'] == "2"].head(num)
         curr_day_neg_list = list(curr_day_neg["text"])
-        curr_day_neu = curr_day_df.loc[curr_day_df['label'] == "0"].head(3)
+        curr_day_neu = curr_day_df.loc[curr_day_df['label'] == "0"].head(num)
         curr_day_neu_list = list(curr_day_neu["text"])
         today_dict = {'positive':curr_day_pos_list, 'neutral':curr_day_neu_list, 'negative':curr_day_neg_list}
         result_list.append(today_dict)
@@ -133,6 +162,24 @@ def start_update_fun(topic):
     if(res==0):
         return Response("gathering of "+topic+" is done.", status=200)
 
+@app.route('/stop_update/<topic>', methods=['PUT'])
+def stop_update_fun(topic):
+    res = stop_update(topic)
+    if(res==-1):
+        return Response("Bad Request! "+topic+" is not an ongoing topic!", status=400)
+    if(res==0):
+        return Response("gathering of "+topic+" is stopped.", status=200)
+    if(res==1):
+        return Response("Some error", status=400)
+
+@app.route('/delete/<topic>', methods=['DELETE'])
+def delete_fun(topic):
+    res = delete_topic(topic)
+    if(res==-1):
+        return Response("Bad Request! "+topic+" is not an ongoing topic!", status=400)
+    if(res==0):
+        return Response("Data of "+topic+" is deleted.", status=200)
+
 @app.route('/get_result/<topic>', methods=['GET'])
 def get_result_fun(topic):
     if not topic:
@@ -153,7 +200,8 @@ def get_curr_result_fun(topic):
 
 @app.route('/get_curr_topics', methods=['GET'])
 def get_curr_topics_fun():
-    result_dict ={"data":cuurrent_topic_list}
+    current_topic_list = list(current_topic_set)
+    result_dict ={"data":current_topic_list}
     return NpEncoder().encode(result_dict),200
 
 @app.route('/get_all_topics', methods=['GET'])
