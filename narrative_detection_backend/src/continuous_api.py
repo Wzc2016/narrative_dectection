@@ -210,9 +210,10 @@ def get_all_topics_fun():
     result_dict = {"data":all_topic_list}
     return NpEncoder().encode(result_dict),200
 
-@app.route('/get_daily_sample/<topic>', methods=['GET'])
-def get_daily_sample_fun(topic):
-    result_list = get_daily_sample(topic)
+@app.route('/get_daily_sample/<topic>/<num>', methods=['GET'])
+def get_daily_sample_fun(topic,num):
+    num = int(num)
+    result_list = get_daily_sample(topic,num)
     if not result_list:
         return Response("Bad Request! Didn't find data for "+topic, status=400)
     result_dict ={"data":result_list}
