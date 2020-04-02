@@ -1,6 +1,8 @@
 from flask import Flask, request, Response, jsonify
 import json
 import copy
+import signal
+import time
 import os
 import numpy as np
 import pandas as pd
@@ -67,6 +69,10 @@ def start_update(topic):
     all_topic_set.add(topic)
     current_topic_set.add(topic)
     process = subprocess.Popen(["python3","./continuous_update.py", topic])
+#    time.sleep(5)
+#    print(71)
+#    os.killpg(os.getpgid(process.pid), signal.SIGUSR1)
+#    print(72)
     child_id_dict[topic] = process
     return 1
 #    pid=os.fork()
@@ -83,18 +89,36 @@ def start_update(topic):
 def stop_update(topic):
     if topic not in current_topic_set:
         return -1
-    topic_pid = child_id_dict[topic]
-    result = kill_process(topic_pid)
-    if result==1:
-        current_topic_set.remove(topic)
-        return 0
-    else:
-        return 1
+    current_topic_set.remove(topic)
+    process = child_id_dict[topic]
+    os.kill(process.pid, signal.SIGUSR1)
+    return 0
+
+def resume_update(topic):
+    if topic in current_topic_set:
+        return -1
+    all_topic_list = [f[0:-11] for f in listdir("../results/data/") if (isfile(join("../results/data/", f)) and f[-1]=="v")]
+    if topic not in all_topic_list:
+        return -2
+    current_topic_set.add(topic)
+    process = child_id_dict[topic]
+    os.kill(process.pid, signal.SIGUSR2)
+    return 0
 
 def delete_topic(topic):
     all_topic_list = [f[0:-11] for f in listdir("../results/data/") if (isfile(join("../results/data/", f)) and f[-1]=="v")]
     if topic not in all_topic_list:
         return -1
+    process = child_id_dict[topic]
+    result = kill_process(process)
+    if topic in current_topic_set:
+        current_topic_set.remove(topic)
+#    if result==1:
+#        current_topic_set.remove(topic)
+#        return 0
+#    else:
+#        return 1
+
     os.remove("../results/statistics/"+topic+"_statistics.json")
     os.remove("../results/data/"+topic+"_result.csv")
     if pathlib.Path("../results/statistics/"+topic+"_curr_statistics.json").exists():
@@ -172,6 +196,16 @@ def stop_update_fun(topic):
     if(res==1):
         return Response("Some error", status=400)
 
+@app.route('/resume_update/<topic>', methods=['PUT'])
+def resume_update_fun(topic):
+    res = resume_update(topic)
+    if(res==-1):
+        return Response("Bad Request! "+topic+" is currently updating!", status=400)
+    if(res==-2):
+        return Response("Bad Request! "+topic+" is not an valid topic!", status=400)
+    if(res==0):
+        return Response("gathering of "+topic+" is resumed.", status=200)
+
 @app.route('/delete/<topic>', methods=['DELETE'])
 def delete_fun(topic):
     res = delete_topic(topic)
@@ -229,5 +263,5 @@ def get_curr_sample_fun(topic):
     return NpEncoder().encode(result_dict),200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', port=7000, debug=True)
 
