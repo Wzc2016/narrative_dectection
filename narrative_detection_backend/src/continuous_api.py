@@ -14,9 +14,10 @@ from dateutil.parser import parse
 from bson import ObjectId
 from os import listdir
 from os.path import isfile, join
-
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 data_path = "/data"
 
 child_id_dict = {}
