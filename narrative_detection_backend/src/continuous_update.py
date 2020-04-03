@@ -76,10 +76,11 @@ if __name__ == '__main__':
                 label = label_line.split("\t")[-1][:-1]
                 date = raw_df.iloc[count]["date"]
                 text = raw_df.iloc[count]["rawTweet"]
-                label_list.append([date,label,text])
+                url = raw_df.iloc[count]["url"]
+                label_list.append([date,label,text,url])
                 label_line = label_file.readline()
                 count+=1
-            label_to_date_df = pd.DataFrame(label_list,columns=["date","label","text"])
+            label_to_date_df = pd.DataFrame(label_list,columns=["date","label","text","url"])
 
             # Calculate the average polarization, the larger the more positive
             one_df = label_to_date_df.loc[label_to_date_df["label"]=="1"]

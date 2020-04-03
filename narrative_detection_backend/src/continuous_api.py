@@ -233,6 +233,21 @@ def get_curr_result_fun(topic):
         return Response("Bad Request! Didn't find data for "+topic, status=400)
     return NpEncoder().encode(result_dict),200
 
+@app.route('/get_curr_result/<topic>/<start_day>/<end_day>', methods=['GET'])
+def get_curr_result_fun1(topic, start_day, end_day):
+    if not topic:
+        return Response("Bad Request! No topic specified!", status=400)
+    if not start_day:
+        return Response("Bad Request! No start day specified!", status=400)
+    if not end_day:
+        return Response("Bad Request! No end day specified!", status=400)
+    result_dict = get_curr_result(topic)
+    if not result_dict:
+        return Response("Bad Request! Didn't find data for "+topic, status=400)
+    for k in result_dict.keys():
+        result_dict[k] = result_dict[k][(start_day-1)*24:(end_day)*24]
+    return NpEncoder().encode(result_dict),200
+
 @app.route('/get_curr_topics', methods=['GET'])
 def get_curr_topics_fun():
     current_topic_list = list(current_topic_set)
