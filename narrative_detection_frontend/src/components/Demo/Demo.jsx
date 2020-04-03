@@ -15,6 +15,7 @@ import HighchartsReact from 'highcharts-react-official'
 import 'katex/dist/katex.min.css'
 import Latex from 'react-latex-next'
 import { ordinalSuffixOf } from 'ordinal-suffix-of';
+import Typography from '@material-ui/core/Typography';
 
 // var APIUrl_get_all_topics = 'http://apollo5.cs.illinois.edu:8000/get_all_topics';
 // var APIUrl_get_daily_sample = 'http://apollo5.cs.illinois.edu:8000/get_daily_sample';
@@ -50,7 +51,8 @@ class App extends React.Component {
       curr_attitude: 'positive',
       number_of_samples: 0,
       stopped: false,
-      errorMsg: ''
+      errorMsg: '',
+      chartSliderVal: [1, 1],
     };
     this.sliderHandler = this.sliderHandler.bind(this);
     this.sliderTxtHandler = this.sliderTxtHandler.bind(this);
@@ -119,7 +121,7 @@ class App extends React.Component {
       if(this.state.curr_topic == '') {
         return
       }
-      fetch(APIUrl_get_daily_sample + '/' + this.state.curr_topic + '/3' )
+      fetch(APIUrl_get_daily_sample + '/' + this.state.curr_topic + '/' + parseInt(this.state.number_of_samples))
       .then(res => res.json())
       .then(
         (result) => {
@@ -147,6 +149,7 @@ class App extends React.Component {
               neutral_sample: result.data[this.state.sliderVal - 1]['neutral'],
               pro_sample: result.data[this.state.sliderVal - 1]['positive'],
               anti_sample: result.data[this.state.sliderVal - 1]['negative'],
+              chartSliderVal: [1, result.data.length],
             })
           
           
@@ -180,6 +183,12 @@ class App extends React.Component {
       
       
 
+    }
+
+    chartSliderChangeHandler(e, value) {
+      this.setState({
+        chartSliderVal: value,
+      });
     }
 
     changeHandler(e, {value}) {
@@ -216,15 +225,12 @@ class App extends React.Component {
   // 	return date.slice(0, 2) + '-' + date.slice(2, 4) + '-' + date.slice(4,8);
   // }
 
-  valuetext(value) {
-  return `${value}°C`;
-}
-
 
     
 
   render() {
     // console.log(this.statestopped);
+    // console.log(this.state.chartSliderVal)
     const buttonString = this.state.stopped ? "Resume" : "Stop";
 
     const activityOptions = {
@@ -480,7 +486,6 @@ class App extends React.Component {
               <div className='date-slider'>
                   <Slider className='slider'
                   onChange={this.sliderHandler}
-                  getAriaValueText={this.valuetext}
                   valueLabelDisplay="on"
                   max={this.state.number_of_days}
                   min={1}
@@ -501,7 +506,19 @@ class App extends React.Component {
               </div>
               <br/>
               <br/>
-
+                <Typography gutterBottom>
+                  Time Range of Data
+                </Typography>
+                <br/>
+                <Slider className='slider'
+                  valueLabelDisplay="on"
+                  aria-labelledby="range-slider"
+                  max={this.state.number_of_days}
+                  min={1}
+                  marks={marks}
+                  onChange={this.chartSliderChangeHandler.bind(this)}
+                  value={this.state.chartSliderVal}
+                />
             <HighchartsReact
               className='topic-box'
               highcharts={Highcharts}
