@@ -7,22 +7,25 @@ import { ResponsivePieCanvas } from '@nivo/pie'
 import './Demo.css'
 import GaugeChart from 'react-gauge-chart'
 import Thermometer from 'react-thermometer-component'
-// import Slider, { Range } from 'rc-slider'; 
-// import 'rc-slider/assets/index.css';
 import Slider from '@material-ui/core/Slider';
-import { Button, Input, Dropdown, Table } from 'semantic-ui-react'
+import { Select, Button, Input, Dropdown, Table } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import 'katex/dist/katex.min.css'
 import Latex from 'react-latex-next'
+import { ordinalSuffixOf } from 'ordinal-suffix-of';
 
+// var APIUrl_get_all_topics = 'http://apollo5.cs.illinois.edu:8000/get_all_topics';
+// var APIUrl_get_daily_sample = 'http://apollo5.cs.illinois.edu:8000/get_daily_sample';
+// var APIUrl_get_result = 'http://apollo5.cs.illinois.edu:8000/get_result/';
 
-var APIUrl_get_curr_topics = 'http://apollo5.cs.illinois.edu:8000/get_all_topics';
-var APIUrl_get_daily_sample = 'http://apollo5.cs.illinois.edu:8000/get_daily_sample';
-var APIUrl_get_result = 'http://apollo5.cs.illinois.edu:8000/get_result/';
-var beginDate = '01242020';
-var endDate = '02162020';
+var APIUrl_get_all_topics = 'http://127.0.0.1:8000/get_all_topics';
+var APIUrl_get_daily_sample = 'http://127.0.0.1:8000/get_daily_sample';
+var APIUrl_get_result = 'http://127.0.0.1:8000/get_result/';
+var APIUrl_delete = 'http://127.0.0.1:8000/delete/';
+var APIUrl_stop_update = 'http://127.0.0.1:8000/stop_update/';
+var APIUrl_resume_update = 'http://127.0.0.1:8000/resume_update/';
 
 
 class App extends React.Component {
@@ -35,15 +38,19 @@ class App extends React.Component {
       topicOptions: [],
       curr_topic: '',
       sliderVal: 1,
-      neutral_sample: [],
-      pro_sample: [],
-      anti_sample: [],
+      samples: [],
       neutral_list: [],
       positive_list: [],
       negative_list: [],
       total_list: [],
       polar: 0,
-      begin_date: 'Loading...'
+      begin_date: 'Loading...',
+      display_charts: false,
+      number_of_days: 0,
+      curr_attitude: 'positive',
+      number_of_samples: 0,
+      stopped: false,
+      errorMsg: ''
     };
     this.sliderHandler = this.sliderHandler.bind(this);
     this.sliderTxtHandler = this.sliderTxtHandler.bind(this);
@@ -51,7 +58,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-  	fetch(APIUrl_get_curr_topics)
+  	fetch(APIUrl_get_all_topics)
     .then(res => res.json())
     .then(
       (result) => {
@@ -65,6 +72,44 @@ class App extends React.Component {
 
     }
   
+    inputChangeHandler(e, v) {
+      this.setState({
+        number_of_samples: parseInt(v.value)
+      })
+    }
+
+    attitudeChangeHandler(e, v) {
+      this.setState({
+        curr_attitude: v.value,
+      })
+    }
+
+    get_samples() {
+      if(this.state.number_of_samples == NaN) {
+        this.setState({
+          samples: [],
+          errorMsg: 'Please input an integer between 1-30.'
+        })
+        return
+      }
+      if(this.state.number_of_samples > 30 || this.state.number_of_samples < 1) {
+        this.setState({
+          samples: [],
+          errorMsg: 'Please input an integer between 1-30.'
+        })
+        return
+      } 
+      fetch(APIUrl_get_daily_sample + '/' + this.state.curr_topic + '/' + this.state.number_of_samples)
+      .then(res => res.json())
+      .then(
+        (result) => {
+            this.setState({
+              samples: result.data[this.state.sliderVal - 1][this.state.curr_attitude],
+            })
+            console.log(result.data[this.state.sliderVal - 1][this.state.curr_attitude]);
+          
+        });
+    }
 
     sliderHandler(e, value) {
       this.setState({
@@ -74,23 +119,14 @@ class App extends React.Component {
       if(this.state.curr_topic == '') {
         return
       }
-      fetch(APIUrl_get_daily_sample + '/' + this.state.curr_topic)
+      fetch(APIUrl_get_daily_sample + '/' + this.state.curr_topic + '/3' )
       .then(res => res.json())
       .then(
         (result) => {
-          if(result.data.length < value) {
             this.setState({
-              neutral_sample: '',
-              pro_sample: '',
-              anti_sample: '',
+              samples: result.data[value - 1][this.state.curr_attitude],
             })
-          } else {
-            this.setState({
-              neutral_sample: result.data[value - 1]['neutral'],
-              pro_sample: result.data[value - 1]['positive'],
-              anti_sample: result.data[value - 1]['negative'],
-            })
-          }
+          
         });
     }
 
@@ -100,26 +136,50 @@ class App extends React.Component {
 
 
     fetch_sample_data(topic) {
-      fetch(APIUrl_get_daily_sample + '/' + topic)
+      fetch(APIUrl_get_daily_sample + '/' + topic + '/3')
       .then(res => res.json())
       .then(
         (result) => {
           // console.log(result.data.length , this.state.sliderVal)
-          if(result.data.length < this.state.sliderVal) {
+          
             this.setState({
-              neutral_sample: '',
-              pro_sample: '',
-              anti_sample: '',
-            })
-          } else {
-            this.setState({
+              number_of_days: result.data.length,
               neutral_sample: result.data[this.state.sliderVal - 1]['neutral'],
               pro_sample: result.data[this.state.sliderVal - 1]['positive'],
               anti_sample: result.data[this.state.sliderVal - 1]['negative'],
             })
-          }
+          
           
         });
+    }
+
+
+    delete_handler(e) {
+      fetch(APIUrl_delete + this.state.curr_topic, {
+        method: 'DELETE'
+      })
+      window.location.reload(true);
+    }
+
+    stop_handler(e) {
+      if(this.state.stopped) {
+        fetch(APIUrl_resume_update + this.state.curr_topic, {
+          method: 'PUT'
+        })
+        this.setState({
+          stopped: false,
+        })
+      } else {
+        fetch(APIUrl_stop_update + this.state.curr_topic, {
+          method: 'PUT'
+        })
+        this.setState({
+          stopped: true,
+        })
+      }
+      
+      
+
     }
 
     changeHandler(e, {value}) {
@@ -141,6 +201,8 @@ class App extends React.Component {
             total_list: result.data.total,
             polar: result.data.polar,
             begin_date: result.start_time,
+            display_charts: true,
+            stopped: result.pause,
           })
           
         });
@@ -162,6 +224,8 @@ class App extends React.Component {
     
 
   render() {
+    // console.log(this.statestopped);
+    const buttonString = this.state.stopped ? "Resume" : "Stop";
 
     const activityOptions = {
 
@@ -315,7 +379,10 @@ class App extends React.Component {
     const topicOptions = this.state.topics.map((e) => {
             return {text: e, key: e, value: e};
           })
-
+    const attitudeOptions = 
+      [{text: 'Positive', key: 'positive', value: 'positive'}
+      , {text: 'Neutral', key: 'neutral', value: 'neutral'}
+      , {text: 'Negative', key: 'negative', value: 'negative'}];
 
     const marks = [
       {
@@ -323,63 +390,40 @@ class App extends React.Component {
         label: '1st Day (' + this.state.begin_date + ')',
       },
       {
-        value: 15,
-        label: '15th Day',
+        value: this.state.number_of_days,
+        label: ordinalSuffixOf(this.state.number_of_days) + ' Day',
       },
     ];
 
 
-    const TableExampleDefinition = (
+    const samples = this.state.samples.map((e) =>
+          <Table.Row>
+            <Table.Cell>{e}</Table.Cell>
+          </Table.Row>
+    );
+
+
+    const TableExampleDefinition = this.state.samples.length > 0 ? (
       <Table celled structured className='tweet_table'>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell>Attitude</Table.HeaderCell>
             <Table.HeaderCell>Sample Tweets</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
         <Table.Body>
-          <Table.Row>
-            <Table.Cell rowSpan='3'>Neutral</Table.Cell>            
-            <Table.Cell>{this.state.neutral_sample[0]}</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-              <Table.Cell>{this.state.neutral_sample[1]}</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-              <Table.Cell>{this.state.neutral_sample[2]}</Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell rowSpan='3'>Positive</Table.Cell>            
-            <Table.Cell>{this.state.pro_sample[0]}</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-              <Table.Cell>{this.state.pro_sample[1]}</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-              <Table.Cell>{this.state.anti_sample[2]}</Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell rowSpan='3'>Negative</Table.Cell>            
-            <Table.Cell>{this.state.anti_sample[0]}</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-              <Table.Cell>{this.state.anti_sample[1]}</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-              <Table.Cell>{this.state.anti_sample[2]}</Table.Cell>
-          </Table.Row>
+          {samples}
 
         </Table.Body>
       </Table>
-      );
+      ) : (<div>
+        {this.state.errorMsg}
+      </div>);
 
 
 
 
-
+    var display_charts = {display: this.state.display_charts ? 'block' : 'none' };
 
   	 if (error) {
       return <div>Error: {error.message}</div>;
@@ -422,6 +466,13 @@ class App extends React.Component {
 
             <br/>
             <br/>
+ 
+
+            <div style={display_charts}>
+
+            <Button compact positive onClick={this.stop_handler.bind(this)}>{buttonString} this topic</Button>
+            <Button compact negative onClick={this.delete_handler.bind(this)}>Delete this topic</Button>
+            
             <br/>
             <br/>
 
@@ -431,13 +482,21 @@ class App extends React.Component {
                   onChange={this.sliderHandler}
                   getAriaValueText={this.valuetext}
                   valueLabelDisplay="on"
-                  max={15}
+                  max={this.state.number_of_days}
                   min={1}
                   marks={marks}
                   defaultValue={this.state.sliderVal}/>
                 </div>
                 <br/>
 
+
+                <Input type='text' placeholder='#Samples (1~30)' onChange={this.inputChangeHandler.bind(this)} action>
+                  <input />
+                  <Select compact options={attitudeOptions} defaultValue='positive' onChange={this.attitudeChangeHandler.bind(this)}/>
+                  <Button type='submit' onClick={this.get_samples.bind(this)}>GET</Button>
+                </Input>
+                <br/>
+                <br/>
                 {TableExampleDefinition}
               </div>
               <br/>
@@ -456,6 +515,8 @@ class App extends React.Component {
 
            <br/>
            <br/>
+
+           </div>
           </div>
 	    );
 	  }

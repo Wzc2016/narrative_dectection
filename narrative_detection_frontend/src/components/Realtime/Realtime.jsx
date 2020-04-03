@@ -9,9 +9,14 @@ import './Realtime.css'
 // var APIUrl_get_curr_result = 'http://apollo5.cs.illinois.edu:8000/get_curr_result/';
 // var APIUrl_post = 'http://apollo5.cs.illinois.edu:8000/start_update/';
 
-var APIUrl_get_curr_result = 'http://apollo5.cs.illinois.edu:8000/get_curr_result/';
-var APIUrl_post = 'http://apollo5.cs.illinois.edu:8000/start_update/';
-var APIUrl_curr_sample = 'http://apollo5.cs.illinois.edu:8000/get_curr_sample/';
+// var APIUrl_get_curr_result = 'http://apollo5.cs.illinois.edu:8000/get_curr_result/';
+// var APIUrl_post = 'http://apollo5.cs.illinois.edu:8000/start_update/';
+// var APIUrl_curr_sample = 'http://apollo5.cs.illinois.edu:8000/get_curr_sample/';
+
+
+var APIUrl_get_curr_result = 'http://127.0.0.1:8000/get_curr_result/';
+var APIUrl_post = 'http://127.0.0.1:8000/start_update/';
+var APIUrl_curr_sample = 'http://127.0.0.1:8000/get_curr_sample/';
 
 // var host = '127.0.0.1';
 // // Listen on a specific port via the PORT environment variable

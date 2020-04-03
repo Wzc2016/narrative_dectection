@@ -81,9 +81,18 @@ h1{
 .topic-box {
   max-width: 500px !important;
   display: inline-block !important;
-  
-
 }
+
+.topic-box2 {
+  max-width: 150px !important;
+  display: inline-block !important;
+}
+
+.number-input{
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
 
 .tweet_table {
   margin: auto !important;
