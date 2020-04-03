@@ -15,6 +15,8 @@ import datetime
 
 
 #signal.signal(signal.SIGUSR1, receiveSignal)
+def combine_text_url(row):
+    return row['text']+"  "+row['url']
 
 #%%
 if __name__ == '__main__':
@@ -59,7 +61,7 @@ if __name__ == '__main__':
                     json.dump(init_json, fp)
     #            curr_hour_stat = [0,0,0,0]
                 #write to statistic file
-            command_run = os.system("python3 ../../collect_data/collect.py " + sys.argv[1] + " 100")
+            command_run = os.system("python3 ../../collect_data/collect.py " + sys.argv[1])
         #%%
             #run polarization detection model
 
@@ -81,6 +83,7 @@ if __name__ == '__main__':
                 label_line = label_file.readline()
                 count+=1
             label_to_date_df = pd.DataFrame(label_list,columns=["date","label","text","url"])
+            label_to_date_df["text_url"] = label_to_date_df.apply (lambda row: combine_text_url(row), axis=1)
 
             # Calculate the average polarization, the larger the more positive
             one_df = label_to_date_df.loc[label_to_date_df["label"]=="1"]
@@ -135,9 +138,9 @@ if __name__ == '__main__':
                     json.dump(curr_data_stat, fp)
 
                 current_sample_dict = {}
-                current_sample_dict['positive'] = list(label_to_date_df.loc[label_to_date_df["label"]=="2"].head(3)["text"])
-                current_sample_dict['neutral'] = list(label_to_date_df.loc[label_to_date_df["label"]=="0"].head(3)["text"])
-                current_sample_dict['negative'] = list(label_to_date_df.loc[label_to_date_df["label"]=="1"].head(3)["text"])
+                current_sample_dict['positive'] = list(label_to_date_df.loc[label_to_date_df["label"]=="2"].head(3)["text_url"])
+                current_sample_dict['neutral'] = list(label_to_date_df.loc[label_to_date_df["label"]=="0"].head(3)["text_url"])
+                current_sample_dict['negative'] = list(label_to_date_df.loc[label_to_date_df["label"]=="1"].head(3)["text_url"])
                 with open("../results/data/"+sys.argv[1]+"_curr_sample.json", 'w+') as fp:
                     json.dump(current_sample_dict, fp)
 
@@ -154,9 +157,9 @@ if __name__ == '__main__':
                     json.dump(curr_data_stat, fp)
 
                 current_sample_dict = {}
-                current_sample_dict['positive'] = list(label_to_date_df.loc[label_to_date_df["label"]=="1"].head(3)["text"])
-                current_sample_dict['neutral'] = list(label_to_date_df.loc[label_to_date_df["label"]=="0"].head(3)["text"])
-                current_sample_dict['negative'] = list(label_to_date_df.loc[label_to_date_df["label"]=="2"].head(3)["text"])
+                current_sample_dict['positive'] = list(label_to_date_df.loc[label_to_date_df["label"]=="1"].head(3)["text_url"])
+                current_sample_dict['neutral'] = list(label_to_date_df.loc[label_to_date_df["label"]=="0"].head(3)["text_url"])
+                current_sample_dict['negative'] = list(label_to_date_df.loc[label_to_date_df["label"]=="2"].head(3)["text_url"])
                 with open("../results/data/"+sys.argv[1]+"_curr_sample.json", 'w+') as fp:
                     json.dump(current_sample_dict, fp)
 
