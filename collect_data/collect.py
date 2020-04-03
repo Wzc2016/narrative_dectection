@@ -66,7 +66,7 @@ if __name__ == '__main__':
 		item_modified['user_id'] = item['user']['id']
 		item_modified['url'] = 'https://twitter.com/'+item['user']['screen_name']+'/status/'+item['id_str'];
 		f.write(str(item_modified) + '\n')
-		data_list.append([item_modified['user_id'], item_modified['text'], item_modified['created_at'][4:10]+item_modified['created_at'][-5:]])
-	extracted_dataframe = pd.DataFrame(data_list,columns=["name","rawTweet","date"])	
+		data_list.append([item_modified['user_id'], item_modified['text'], item_modified['created_at'][4:10]+item_modified['created_at'][-5:], item_modified['url']])
+	extracted_dataframe = pd.DataFrame(data_list,columns=["name","rawTweet","date","url"])	
 	extracted_dataframe.to_csv("./extracted_datas/"+sys.argv[1]+"_extracted_data.csv", header=True, index=False, sep="\t")
 

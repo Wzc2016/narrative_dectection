@@ -15,6 +15,7 @@ from bson import ObjectId
 from os import listdir
 from os.path import isfile, join
 from flask_cors import CORS
+import atexit
 
 app = Flask(__name__)
 CORS(app)
@@ -24,6 +25,14 @@ child_id_dict = {}
 all_topic_set = set()
 current_topic_set = set()
 #current_topic_list = []
+
+def exit_handler():
+    for topic in child_id_dict:
+        process = child_id_dict[topic]
+        result = kill_process(process)
+    print ('Thank you for using our narrative detection software!')
+
+atexit.register(exit_handler)
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -110,8 +119,9 @@ def delete_topic(topic):
     all_topic_list = [f[0:-11] for f in listdir("../results/data/") if (isfile(join("../results/data/", f)) and f[-1]=="v")]
     if topic not in all_topic_list:
         return -1
-    process = child_id_dict[topic]
-    result = kill_process(process)
+    if topic in child_id_dict:
+        process = child_id_dict[topic]
+        result = kill_process(process)
     if topic in current_topic_set:
         current_topic_set.remove(topic)
 #    if result==1:
@@ -224,6 +234,29 @@ def get_result_fun(topic):
         return Response("Bad Request! Didn't find data for "+topic, status=400)
     return NpEncoder().encode(result_dict),200
 
+@app.route('/get_result/<topic>/<start_day>/<end_day>', methods=['GET'])
+def get_result_fun1(topic,start_day,end_day):
+    start_day = int(start_day)
+    end_day = int(end_day)
+    if not topic:
+        return Response("Bad Request! No topic specified!", status=400)
+    if not start_day:
+        return Response("Bad Request! No start day specified!", status=400)
+    if not end_day:
+        return Response("Bad Request! No end day specified!", status=400)
+    result_dict = get_result(topic)
+    if not result_dict:
+        return Response("Bad Request! Didn't find data for "+topic, status=400)
+#    try:
+    end_index = (end_day)*24
+    if end_index>=len(result_dict["data"]["positive"]):
+        end_index = len(result_dict["data"]["positive"])-1
+    for k in result_dict["data"].keys():
+        result_dict["data"][k] = result_dict["data"][k][(start_day-1)*24:end_index]
+#    except:
+#        return Response("Bad Request! Wrong range!", status=400)
+    return NpEncoder().encode(result_dict),200
+
 @app.route('/get_curr_result/<topic>', methods=['GET'])
 def get_curr_result_fun(topic):
     if not topic:
@@ -231,21 +264,6 @@ def get_curr_result_fun(topic):
     result_dict = get_curr_result(topic)
     if not result_dict:
         return Response("Bad Request! Didn't find data for "+topic, status=400)
-    return NpEncoder().encode(result_dict),200
-
-@app.route('/get_curr_result/<topic>/<start_day>/<end_day>', methods=['GET'])
-def get_curr_result_fun1(topic, start_day, end_day):
-    if not topic:
-        return Response("Bad Request! No topic specified!", status=400)
-    if not start_day:
-        return Response("Bad Request! No start day specified!", status=400)
-    if not end_day:
-        return Response("Bad Request! No end day specified!", status=400)
-    result_dict = get_curr_result(topic)
-    if not result_dict:
-        return Response("Bad Request! Didn't find data for "+topic, status=400)
-    for k in result_dict.keys():
-        result_dict[k] = result_dict[k][(start_day-1)*24:(end_day)*24]
     return NpEncoder().encode(result_dict),200
 
 @app.route('/get_curr_topics', methods=['GET'])
