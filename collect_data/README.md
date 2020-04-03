@@ -1,30 +1,29 @@
 # How to run
 
-There are two options. You can run
-
-```
-python3 collect.py Trump 100
-```
-
-which means to collect data of 100 recent posts with hashtag 'Trump'.
-
-Or you can run
+You can run
 
 ```
 python3 collect.py Trump
 ```
 
-which means to collect data of 15 recent posts with hashtag 'Trump'.
+which means to collect data of 100 recent posts with word 'Trump'.
+
+Or you can run
+
+```
+python3 collect.py Trump Biden
+```
+
+which means to collect data of 100 recent posts with words 'Trump' and 'Biden'.
 
 You can find data in the file 'output.txt'.
 
 Sample output:
 
 ```c
-{'text': '@IntyMedia #ChineseVirus', 'id': 1240885384688492544, 'created_at': 'Fri Mar 20 06:18:24 +0000 2020', 'user_id': 700744842289123328}
-{'text': 'RT @EvaSaraLandau: @patriciajaniot @POTUS Is not xenophobia, is another way to call the virus, #coronavirus = #ChineseVirus', 'id': 1240885376354566144, 'created_at': 'Fri Mar 20 06:18:22 +0000 2020', 'user_id': 627798694}
-{'text': '@petracostal @EmbaixadaChina #ChineseVirus #VirusChines', 'id': 1240885347724263426, 'created_at': 'Fri Mar 20 06:18:16 +0000 2020', 'user_id': 930427013801881605}
-{'text': 'RT @loves_nra: BREAKING:\n\nDue to the #ChineseVirus ...\n\nNew Jersey state will permanently shut down all barber shops, beauty &amp; nail salons…', 'id': 1240885330053443585, 'created_at': 'Fri Mar 20 06:18:11 +0000 2020', 'user_id': 339217151}
-{'text': 'Join the #CleanHands @ https://t.co/RA147fKf34 #CoronaVirusUpdate #WuhanVirus #ChineseVirus #CV19 #COVID19 https://t.co/nvdKvubRgP', 'id': 1240885313259499521, 'created_at': 'Fri Mar 20 06:18:07 +0000 2020', 'user_id': 784589581756854272}
-{'text': 'RT @pauloeneas: O embaixador da China no Brasil agrediu nossa soberania e quebrou uma das regras da diplomacia ao fazer ingerência em assun…', 'id': 1240885313163145217, 'created_at': 'Fri Mar 20 06:18:07 +0000 2020', 'user_id': 53698103}
+{'text': '@sweet_melissa80 @330bluemoon @SexCounseling @realDonaldTrump Is that why Trump is begging China and Russia for med… https://t.co/wRimql2r0O', 'id': 1245870780069466113, 'created_at': 'Fri Apr 03 00:28:35 +0000 2020', 'user_id': 1242399324434096128, 'url': 'https://twitter.com/TheGuyFox2/status/1245870780069466113'}
+{'text': 'RT @RealCandaceO: It’s hard to imagine Jemele Hill in a more ass-stupid context but here we go—\n@jemelehill is here to remind you all that…', 'id': 1245870779993952256, 'created_at': 'Fri Apr 03 00:28:35 +0000 2020', 'user_id': 3294942553, 'url': 'https://twitter.com/VFL_Susan/status/1245870779993952256'}
+{'text': 'RT @DeniseGst: So just a thought. Robert Craft sent his plane to China to get masks for America.  But  #3M is selling their masks to China.…', 'id': 1245870775816433664, 'created_at': 'Fri Apr 03 00:28:34 +0000 2020', 'user_id': 417227900, 'url': 'https://twitter.com/DeniseGst/status/1245870775816433664'}
+{'text': "RT @BreitbartNews: America must break free of Communist China's grip on U.S. supply chains in all industries. https://t.co/ne8sCukLLN", 'id': 1245870775619346433, 'created_at': 'Fri Apr 03 00:28:34 +0000 2020', 'user_id': 585263233, 'url': 'https://twitter.com/bloominbloom/status/1245870775619346433'}
+{'text': 'RT @RealCandaceO: It’s hard to imagine Jemele Hill in a more ass-stupid context but here we go—\n@jemelehill is here to remind you all that…', 'id': 1245870772175814660, 'created_at': 'Fri Apr 03 00:28:33 +0000 2020', 'user_id': 976555530, 'url': 'https://twitter.com/Dabadguy2332/status/1245870772175814660'}
 ```
