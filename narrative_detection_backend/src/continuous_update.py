@@ -61,7 +61,8 @@ if __name__ == '__main__':
                     json.dump(init_json, fp)
     #            curr_hour_stat = [0,0,0,0]
                 #write to statistic file
-            command_run = os.system("python3 ../../collect_data/collect.py " + sys.argv[1])
+            keyword = sys.argv[1].replace("_"," ")
+            command_run = os.system("python3 ../../collect_data/collect.py " + keyword)
         #%%
             #run polarization detection model
 

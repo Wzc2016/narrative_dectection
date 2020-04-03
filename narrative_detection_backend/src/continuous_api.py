@@ -52,7 +52,8 @@ class NpEncoder(json.JSONEncoder):
             return super(NpEncoder, self).default(obj)
 
 def parse_topic(topic):
-    topic.replace("_"," ")
+#    return topic.replace("_"," ")
+    return topic
 
 def check_pid(pid):
     try:
@@ -189,6 +190,7 @@ def get_curr_sample(topic):
 
 @app.route('/start_update/<topic>', methods=['POST'])
 def start_update_fun(topic):
+    topic = parse_topic(topic)
     res = start_update(topic)
     if(res==-1):
         return Response("Bad Request! "+topic+" is currently updating!", status=400)
@@ -199,6 +201,7 @@ def start_update_fun(topic):
 
 @app.route('/stop_update/<topic>', methods=['PUT'])
 def stop_update_fun(topic):
+    topic = parse_topic(topic)
     res = stop_update(topic)
     if(res==-1):
         return Response("Bad Request! "+topic+" is not an ongoing topic!", status=400)
@@ -209,6 +212,7 @@ def stop_update_fun(topic):
 
 @app.route('/resume_update/<topic>', methods=['PUT'])
 def resume_update_fun(topic):
+    topic = parse_topic(topic)
     res = resume_update(topic)
     if(res==-1):
         return Response("Bad Request! "+topic+" is currently updating!", status=400)
@@ -219,6 +223,7 @@ def resume_update_fun(topic):
 
 @app.route('/delete/<topic>', methods=['DELETE'])
 def delete_fun(topic):
+    topic = parse_topic(topic)
     res = delete_topic(topic)
     if(res==-1):
         return Response("Bad Request! "+topic+" is not an ongoing topic!", status=400)
@@ -227,6 +232,7 @@ def delete_fun(topic):
 
 @app.route('/get_result/<topic>', methods=['GET'])
 def get_result_fun(topic):
+    topic = parse_topic(topic)
     if not topic:
         return Response("Bad Request! No topic specified!", status=400)
     result_dict = get_result(topic)
@@ -236,6 +242,7 @@ def get_result_fun(topic):
 
 @app.route('/get_result/<topic>/<start_day>/<end_day>', methods=['GET'])
 def get_result_fun1(topic,start_day,end_day):
+    topic = parse_topic(topic)
     start_day = int(start_day)
     end_day = int(end_day)
     if not topic:
@@ -249,8 +256,8 @@ def get_result_fun1(topic,start_day,end_day):
         return Response("Bad Request! Didn't find data for "+topic, status=400)
 #    try:
     end_index = (end_day)*24
-    if end_index>=len(result_dict["data"]["positive"]):
-        end_index = len(result_dict["data"]["positive"])-1
+    if end_index>len(result_dict["data"]["positive"]):
+        end_index = len(result_dict["data"]["positive"])
     for k in result_dict["data"].keys():
         result_dict["data"][k] = result_dict["data"][k][(start_day-1)*24:end_index]
 #    except:
@@ -259,6 +266,7 @@ def get_result_fun1(topic,start_day,end_day):
 
 @app.route('/get_curr_result/<topic>', methods=['GET'])
 def get_curr_result_fun(topic):
+    topic = parse_topic(topic)
     if not topic:
         return Response("Bad Request! No topic specified!", status=400)
     result_dict = get_curr_result(topic)
@@ -268,18 +276,21 @@ def get_curr_result_fun(topic):
 
 @app.route('/get_curr_topics', methods=['GET'])
 def get_curr_topics_fun():
+    topic = parse_topic(topic)
     current_topic_list = list(current_topic_set)
     result_dict ={"data":current_topic_list}
     return NpEncoder().encode(result_dict),200
 
 @app.route('/get_all_topics', methods=['GET'])
 def get_all_topics_fun():
+    topic = parse_topic(topic)
     all_topic_list = [f[0:-11] for f in listdir("../results/data/") if (isfile(join("../results/data/", f)) and f[-1]=="v")]
     result_dict = {"data":all_topic_list}
     return NpEncoder().encode(result_dict),200
 
 @app.route('/get_daily_sample/<topic>/<num>', methods=['GET'])
 def get_daily_sample_fun(topic,num):
+    topic = parse_topic(topic)
     num = int(num)
     result_list = get_daily_sample(topic,num)
     if not result_list:
@@ -289,6 +300,7 @@ def get_daily_sample_fun(topic,num):
 
 @app.route('/get_curr_sample/<topic>', methods=['GET'])
 def get_curr_sample_fun(topic):
+    topic = parse_topic(topic)
     if not topic:
         return Response("Bad Request! No topic specified!", status=400)
     result_dict = get_curr_sample(topic)
