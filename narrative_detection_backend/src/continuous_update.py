@@ -188,6 +188,6 @@ if __name__ == '__main__':
                 with open("../results/statistics/"+sys.argv[1]+"_statistics.json", 'w+') as fp:
                     json.dump(init_json, fp)
 #            print("paused")
-        time.sleep(10)
+        time.sleep(1)
 #        if (time.time()-start_time>60):
 #            break
