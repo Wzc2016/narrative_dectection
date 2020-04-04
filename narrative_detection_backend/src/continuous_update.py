@@ -42,6 +42,9 @@ if __name__ == '__main__':
     with open("../results/statistics/"+sys.argv[1]+"_statistics.json", 'w+') as fp:
         json.dump(init_json, fp)
     curr_hour_stat = [0,0,0,0,0]
+    current_sample_dict = {}
+    curr_hour_sample_dict = {"positive":[],"negative":[],"neutral":[]}
+    hour_sample_list = []
 #    while hour_count<10:
     while True:
         if not pause:
@@ -59,6 +62,14 @@ if __name__ == '__main__':
                 init_json["data"]["polar"].append(curr_hour_stat[4])
                 with open("../results/statistics/"+sys.argv[1]+"_statistics.json", 'w+') as fp:
                     json.dump(init_json, fp)
+        
+                curr_hour_sample_result = {}
+                curr_hour_sample_result["positive"] = [{"text":"".join(v.split("  ")[0:-1]),"url":v.split("  ")[-1]} for v in curr_hour_sample_dict["positive"]][0:10]
+                curr_hour_sample_result["negative"] = [{"text":"".join(v.split("  ")[0:-1]),"url":v.split("  ")[-1]} for v in curr_hour_sample_dict["negative"]][0:10]
+                curr_hour_sample_result["neutral"] = [{"text":"".join(v.split("  ")[0:-1]),"url":v.split("  ")[-1]} for v in curr_hour_sample_dict["neutral"]][0:10]
+                hour_sample_list.append(curr_hour_sample_result)
+                with open("../results/data/"+sys.argv[1]+"_hour_sample.json", 'w+') as fp:
+                    json.dump({"data":hour_sample_list}, fp)
     #            curr_hour_stat = [0,0,0,0]
                 #write to statistic file
             keyword = sys.argv[1].replace("_"," ")
@@ -161,6 +172,11 @@ if __name__ == '__main__':
                 current_sample_dict['positive'] = list(label_to_date_df.loc[label_to_date_df["label"]=="1"].head(3)["text_url"])
                 current_sample_dict['neutral'] = list(label_to_date_df.loc[label_to_date_df["label"]=="0"].head(3)["text_url"])
                 current_sample_dict['negative'] = list(label_to_date_df.loc[label_to_date_df["label"]=="2"].head(3)["text_url"])
+
+                curr_hour_sample_dict['positive']+=list(label_to_date_df.loc[label_to_date_df["label"]=="1"].head(3)["text_url"])
+                curr_hour_sample_dict['neutral']+=list(label_to_date_df.loc[label_to_date_df["label"]=="0"].head(3)["text_url"])
+                curr_hour_sample_dict['negative']+=list(label_to_date_df.loc[label_to_date_df["label"]=="2"].head(3)["text_url"])
+                
                 with open("../results/data/"+sys.argv[1]+"_curr_sample.json", 'w+') as fp:
                     json.dump(current_sample_dict, fp)
 

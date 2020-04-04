@@ -155,7 +155,7 @@ def get_curr_result(topic):
         result_dict = json.load(f)
     return result_dict
 
-def get_daily_sample(topic, num):
+def get_real_daily_sample(topic, num):
     file = pathlib.Path("../results/data/"+topic+"_result.csv")
     if not file.exists():
         return None
@@ -181,6 +181,32 @@ def get_daily_sample(topic, num):
         result_list.append(today_dict)
         curr_date += datetime.timedelta(days=1)
     return result_list
+
+def dict_combine_helper(d_list):
+    new_d = d_list[0]
+    for i in range(1,len(d_list)):
+        for k in new_d.keys():
+            new_d[k]+=d_list[i][k]
+    return new_d
+
+def dict_slice_helper(d,num):
+    for k in d.keys():
+        d[k] = d[k][0:num]
+    return d
+
+def get_daily_sample(topic, num):
+    file = pathlib.Path("../results/data/"+topic+"_hour_sample.json")
+    if not file.exists():
+        return None
+    with open("../results/data/"+topic+"_hour_sample.json", 'r') as f:
+        hour_sample_list = json.load(f)["data"]
+    daily_sample_list = []
+    for day in range(0,int(len(hour_sample_list)/24)):
+        daily_sample_list.append(dict_combine_helper(hour_sample_list[day*24:(day+1)*24]))
+    day = int(len(hour_sample_list)/24)
+    daily_sample_list.append(dict_combine_helper(hour_sample_list[(day*24):]))
+    daily_sample_list = [dict_slice_helper(e,num) for e in daily_sample_list]
+    return daily_sample_list
 
 def get_curr_sample(topic):
     file = pathlib.Path("../results/data/"+topic+"_curr_sample.json")
@@ -295,6 +321,8 @@ def get_daily_sample_fun(topic,num):
     result_list = get_daily_sample(topic,num)
     if not result_list:
         return Response("Bad Request! Didn't find data for "+topic, status=400)
+#    if topic not in all_topic_set:
+#        return Response("Bad Request! Didn't find data for "+topic, status=400)
     result_dict ={"data":result_list}
     return NpEncoder().encode(result_dict),200
 
