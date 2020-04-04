@@ -67,7 +67,7 @@ class App extends React.Component {
         this.setState({
           topics: result.data,
           topicOptions: result.data.map((e) => {
-            return {text: e};
+            return {text: e.split("_").join(" ")};
           })
         })
       });
@@ -146,9 +146,6 @@ class App extends React.Component {
           
             this.setState({
               number_of_days: result.data.length,
-              neutral_sample: result.data[this.state.sliderVal - 1]['neutral'],
-              pro_sample: result.data[this.state.sliderVal - 1]['positive'],
-              anti_sample: result.data[this.state.sliderVal - 1]['negative'],
               chartSliderVal: [1, result.data.length],
             })
           
@@ -189,6 +186,24 @@ class App extends React.Component {
       this.setState({
         chartSliderVal: value,
       });
+      console.log(value);
+      fetch(APIUrl_get_result + this.state.curr_topic + '/' + parseInt(value[0]) + '/' + parseInt(value[1]))
+      .then(res => res.json())
+      .then(
+        (result) => {
+          // console.log(result.data.length , this.state.sliderVal)
+          this.setState({
+            positive_list: result.data.positive,
+            neutral_list: result.data.neutral,
+            negative_list: result.data.negative,
+            total_list: result.data.total,
+            polar: result.data.polar,
+            begin_date: result.start_time,
+            display_charts: true,
+            stopped: result.pause,
+          })
+          
+        });
     }
 
     changeHandler(e, {value}) {
@@ -198,7 +213,7 @@ class App extends React.Component {
 
       this.fetch_sample_data(value);
 
-      fetch(APIUrl_get_result + value)
+      fetch(APIUrl_get_result + value + '/' + parseInt(this.state.chartSliderVal[0]) + '/' + parseInt(this.state.chartSliderVal[1]))
       .then(res => res.json())
       .then(
         (result) => {
@@ -218,13 +233,6 @@ class App extends React.Component {
 
 
     }
-
-  
-
-  // dateParser(date) {
-  // 	return date.slice(0, 2) + '-' + date.slice(2, 4) + '-' + date.slice(4,8);
-  // }
-
 
     
 
@@ -383,7 +391,7 @@ class App extends React.Component {
   	const { error, isLoaded} = this.state;
 
     const topicOptions = this.state.topics.map((e) => {
-            return {text: e, key: e, value: e};
+            return {text: e.split("_").join(" "), key: e, value: e};
           })
     const attitudeOptions = 
       [{text: 'Positive', key: 'positive', value: 'positive'}
@@ -404,7 +412,7 @@ class App extends React.Component {
 
     const samples = this.state.samples.map((e) =>
           <Table.Row>
-            <Table.Cell>{e}</Table.Cell>
+            <Table.Cell>{e['text']}<a href={e['url']}> [Link]</a></Table.Cell>
           </Table.Row>
     );
 

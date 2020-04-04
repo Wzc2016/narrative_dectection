@@ -66,6 +66,8 @@ class Realtime extends Component {
       neutral_sample: [],
       pro_sample: [],
       anti_sample: [],
+      displaySuccess: false,
+
     }
 
     this.keyPressHandler = this.keyPressHandler.bind(this);
@@ -78,35 +80,33 @@ class Realtime extends Component {
 
   GetData() {
     fetch(APIUrl_get_curr_result + this.state.currentTopic)
-    .then(res => res.json())
+    .then(res => {
+      if(res.status === 400) {
+        return 'Loading'
+      } else {
+        return res.json()
+      }
+    })
     .then(
       (result) => {
+        if(result === 'Loading') {
+          return
+        }
         this.setState({
-          positive: this.state.positive + result.positive,
-          negative: this.state.negative + result.negative,
-          neutral: this.state.neutral + result.neutral,
-          total: this.state.positive + this.state.negative + this.state.neutral + result.positive + result.negative + result.neutral,
-          curTime: new Date().toLocaleString(),
-          activity:  (result.positive + result.negative + result.neutral) / 100.0,
+            positive: this.state.positive + result.positive,
+            negative: this.state.negative + result.negative,
+            neutral: this.state.neutral + result.neutral,
+            total: this.state.positive + this.state.negative + this.state.neutral + result.positive + result.negative + result.neutral,
+            curTime: new Date().toLocaleString(),
+            activity:  (result.positive + result.negative + result.neutral) / 100.0,
 
           displayLoading: false,
           displayCharts: true,
+          displaySuccess: true,
         })
         // console.log(this.state.total, this.state.positive, this.state.negative, this.state.neutral);
       }
     );
-
-    fetch(APIUrl_curr_sample + this.state.currentTopic)
-    .then(res => res.json())
-    .then(
-      (result) => {
-        this.setState({
-              neutral_sample: result.neutral,
-              pro_sample: result.positive,
-              anti_sample: result.negative,
-          })
-        }
-      )
 
   }
 
@@ -117,10 +117,10 @@ class Realtime extends Component {
 
     this.setState({
       displayLoading: true,
-      currentTopic: this.state.value,
+      currentTopic: this.state.value.split(' ').join('_'),
     })
 
-    fetch(APIUrl_post + this.state.value, {method: 'POST'});
+    fetch(APIUrl_post + this.state.value.split(' ').join('_'), {method: 'POST'});
 
 
     sleep(5000).then(() => {
@@ -136,7 +136,7 @@ class Realtime extends Component {
     this.setState({
       beginTime: new Date().toLocaleString(),
       curTime: new Date().toLocaleString(),
-      currentTopic: this.state.value,
+      currentTopic: this.state.value.split(' ').join('_'),
       displayTime: true,
       positive: 0,
       negative: 0,
@@ -145,6 +145,7 @@ class Realtime extends Component {
       activity: 0,
       displayLoading: true,
       displayCharts: false,
+      displaySuccess: false,
     })
 
     
@@ -225,6 +226,7 @@ class Realtime extends Component {
     var displayTime = {display: this.state.displayTime ? 'block' : 'none' };
     var displayCharts = {display: this.state.displayCharts ? 'block' : 'none' }
     var displayLoading = {display: this.state.displayLoading ? 'block' : 'none' }
+    var displaySuccess = {display: this.state.displaySuccess ? 'block' : 'none' }
     return (
       <div className='Realtime'>
       <br/>
@@ -254,11 +256,15 @@ class Realtime extends Component {
           </Button>
           <br/>
           <br/>
-          <div style={displayLoading}>
+         <div style={displayLoading}>
             Loading......(May take a few seconds.)
           </div>
 
-            <div className='charts'>
+          <div style={displaySuccess}>
+            Successful! You can find your result at Archive!
+          </div>
+
+            {/* <div className='charts'>
                   <div>
                     <GaugeChart id="gauge-chart1" 
                       nrOfLevels={2} 
@@ -319,11 +325,7 @@ class Realtime extends Component {
           </Label>
           <br/>
           <br/>
-          <br/>
-          {TableExampleDefinition}
-          <br/>
-          <br/>
-          <br/>
+         */} <br/>
 
       </div>
     )

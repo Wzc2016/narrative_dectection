@@ -42,7 +42,7 @@ if __name__ == '__main__':
     
     while flag:
         results = make_request(BASE_URL, parameters)
-        
+        print(results)
         if len(results['statuses'])>50:
             print(len(results['statuses']))
             with open('./max_ids.json', 'w') as f2:
