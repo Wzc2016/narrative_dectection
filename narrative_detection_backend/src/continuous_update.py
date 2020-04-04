@@ -164,7 +164,7 @@ if __name__ == '__main__':
                 with open("../results/data/"+sys.argv[1]+"_curr_sample.json", 'w+') as fp:
                     json.dump(current_sample_dict, fp)
 
-            file = pathlib.Path("../results/"+sys.argv[1]+"_result.csv")
+            file = pathlib.Path("../results/data/"+sys.argv[1]+"_result.csv")
 
             if file.exists():
                 if flag==1:
@@ -173,6 +173,7 @@ if __name__ == '__main__':
                     label_to_date_df.to_csv("../results/data/"+sys.argv[1]+"_result.csv", header=False, index=False, sep="\t", mode="a")
             else:
                 label_to_date_df.to_csv("../results/data/"+sys.argv[1]+"_result.csv", header=True, index=False, sep="\t", mode="a")
+            flag = 0
 #            print("not paused")
         else:
             print("pause")
@@ -187,6 +188,6 @@ if __name__ == '__main__':
                 with open("../results/statistics/"+sys.argv[1]+"_statistics.json", 'w+') as fp:
                     json.dump(init_json, fp)
 #            print("paused")
-        time.sleep(5)
+        time.sleep(10)
 #        if (time.time()-start_time>60):
 #            break

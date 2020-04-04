@@ -160,21 +160,23 @@ def get_daily_sample(topic, num):
     if not file.exists():
         return None
     df = pd.read_csv("../results/data/"+topic+"_result.csv", sep="\t")
-    df['date'] = df['date'].apply(lambda x: str(x)[1:12])
-    print(df)
+    df['date'] = df['date'].apply(lambda x: str(x)[0:11])
+#    print(df)
     result_list =[]
-    start_date = datetime.datetime.strptime(df.iloc[1]["date"],'%Y %b %d')
-    end_date = datetime.datetime.strptime(df.iloc[-1]["date"],'%Y %b %d')
+    start_date = datetime.datetime.strptime(df.iloc[1]["date"],'%b %d %Y')
+    end_date = datetime.datetime.strptime(df.iloc[-1]["date"],'%b %d %Y')
     curr_date = start_date
     while curr_date<=end_date:
         today_dict = {}
-        curr_day_df = df.loc[df['date'] == datetime.datetime.strftime(curr_date,'%Y %b %d')]
-        curr_day_pos = curr_day_df.loc[curr_day_df['label'] == "1"].head(num)
-        curr_day_pos_list = list(curr_day_pos["text"])
-        curr_day_neg = curr_day_df.loc[curr_day_df['label'] == "2"].head(num)
-        curr_day_neg_list = list(curr_day_neg["text"])
-        curr_day_neu = curr_day_df.loc[curr_day_df['label'] == "0"].head(num)
-        curr_day_neu_list = list(curr_day_neu["text"])
+        curr_day_df = df.loc[df['date'] == datetime.datetime.strftime(curr_date,'%b %d %Y')]
+        curr_day_pos = curr_day_df.loc[curr_day_df['label'] == 1].head(num)
+#        print(curr_day_pos)
+#        print(curr_day_df.iloc[1]['label'])
+        curr_day_pos_list = list(curr_day_pos["text_url"])
+        curr_day_neg = curr_day_df.loc[curr_day_df['label'] == 2].head(num)
+        curr_day_neg_list = list(curr_day_neg["text_url"])
+        curr_day_neu = curr_day_df.loc[curr_day_df['label'] == 0].head(num)
+        curr_day_neu_list = list(curr_day_neu["text_url"])
         today_dict = {'positive':curr_day_pos_list, 'neutral':curr_day_neu_list, 'negative':curr_day_neg_list}
         result_list.append(today_dict)
         curr_date += datetime.timedelta(days=1)
@@ -276,14 +278,12 @@ def get_curr_result_fun(topic):
 
 @app.route('/get_curr_topics', methods=['GET'])
 def get_curr_topics_fun():
-    topic = parse_topic(topic)
     current_topic_list = list(current_topic_set)
     result_dict ={"data":current_topic_list}
     return NpEncoder().encode(result_dict),200
 
 @app.route('/get_all_topics', methods=['GET'])
 def get_all_topics_fun():
-    topic = parse_topic(topic)
     all_topic_list = [f[0:-11] for f in listdir("../results/data/") if (isfile(join("../results/data/", f)) and f[-1]=="v")]
     result_dict = {"data":all_topic_list}
     return NpEncoder().encode(result_dict),200
