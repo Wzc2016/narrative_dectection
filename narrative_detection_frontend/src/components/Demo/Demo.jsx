@@ -18,15 +18,19 @@ import { ordinalSuffixOf } from 'ordinal-suffix-of';
 import Typography from '@material-ui/core/Typography';
 
 // var APIUrl_get_all_topics = 'http://apollo5.cs.illinois.edu:8000/get_all_topics';
-// var APIUrl_get_daily_sample = 'http://apollo5.cs.illinois.edu:8000/get_daily_sample';
-// var APIUrl_get_result = 'http://apollo5.cs.illinois.edu:8000/get_result/';
+var APIUrl_get_all_topics = 'http://apollo5.cs.illinois.edu:8000/get_all_topics';
+var APIUrl_get_daily_sample = 'http://apollo5.cs.illinois.edu:8000/get_daily_sample';
+var APIUrl_get_result = 'http://apollo5.cs.illinois.edu:8000/get_result/';
+var APIUrl_delete = 'http://apollo5.cs.illinois.edu:8000/delete/';
+var APIUrl_stop_update = 'http://apollo5.cs.illinois.edu:8000/stop_update/';
+var APIUrl_resume_update = 'http://apollo5.cs.illinois.edu:8000/resume_update/';
 
-var APIUrl_get_all_topics = 'http://127.0.0.1:8000/get_all_topics';
-var APIUrl_get_daily_sample = 'http://127.0.0.1:8000/get_daily_sample';
-var APIUrl_get_result = 'http://127.0.0.1:8000/get_result/';
-var APIUrl_delete = 'http://127.0.0.1:8000/delete/';
-var APIUrl_stop_update = 'http://127.0.0.1:8000/stop_update/';
-var APIUrl_resume_update = 'http://127.0.0.1:8000/resume_update/';
+// var APIUrl_get_all_topics = 'http://127.0.0.1:8000/get_all_topics';
+// var APIUrl_get_daily_sample = 'http://127.0.0.1:8000/get_daily_sample';
+// var APIUrl_get_result = 'http://127.0.0.1:8000/get_result/';
+// var APIUrl_delete = 'http://127.0.0.1:8000/delete/';
+// var APIUrl_stop_update = 'http://127.0.0.1:8000/stop_update/';
+// var APIUrl_resume_update = 'http://127.0.0.1:8000/resume_update/';
 
 
 class App extends React.Component {
