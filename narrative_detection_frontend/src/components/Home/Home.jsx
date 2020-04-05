@@ -12,7 +12,7 @@ class Home extends Component {
 
         <p>This a landing page for our app.</p>
 
-        <Link to={process.env.PUBLIC_URL + "/Realtime"}>
+        <Link to={process.env.PUBLIC_URL + "/Search"}>
           <Button>
             Click here to enter!
           </Button>

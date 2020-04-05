@@ -231,9 +231,9 @@ class Realtime extends Component {
       <div className='Realtime'>
       <br/>
       <Button.Group size='large'>
-        <Link to={process.env.PUBLIC_URL + "/Realtime"}>
+        <Link to={process.env.PUBLIC_URL + "/Search"}>
           <Button>
-            Realtime
+            Search
           </Button>
         </Link>
         <Button.Or />

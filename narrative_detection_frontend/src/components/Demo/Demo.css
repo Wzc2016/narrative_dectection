@@ -39,16 +39,17 @@
   }
 }
 
-.charts{
+#gauge-chart1{
   display: inline-flex;
-  padding-top: 30px;
-  padding-bottom: 20px;
-  border-radius: 25px;
+  /*padding-top: 30px;*/
+  /*padding-bottom: 20px;*/
+  /*border-radius: 25px;*/
   margin: 30px 30px;
-  border: 5px solid grey;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: baseline;
+  /*border: 5px solid grey;*/
+  /*flex-direction: row;*/
+  /*justify-content: space-between;*/
+  /*align-items: baseline;*/
+  width: 200px !important;
 }
 
 .temperature{
@@ -106,3 +107,4 @@ h1{
   padding-bottom: 30px;
   border: 1px solid grey;
 }
+

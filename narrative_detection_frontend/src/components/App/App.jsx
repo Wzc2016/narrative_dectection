@@ -12,7 +12,7 @@ class App extends Component {
       <Router>
         <Switch>
           <Route exact path={process.env.PUBLIC_URL + "/"} component={Home}/>
-          <Route exact path={process.env.PUBLIC_URL + "/Realtime"} component={Realtime}/>
+          <Route exact path={process.env.PUBLIC_URL + "/Search"} component={Realtime}/>
           <Route exact path={process.env.PUBLIC_URL + "/Archive"} component={Demo}/>
         </Switch>
       </Router>

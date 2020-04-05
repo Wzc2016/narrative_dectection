@@ -8,7 +8,7 @@ import './Demo.css'
 import GaugeChart from 'react-gauge-chart'
 import Thermometer from 'react-thermometer-component'
 import Slider from '@material-ui/core/Slider';
-import { Select, Button, Input, Dropdown, Table } from 'semantic-ui-react'
+import { Select, Button, Input, Dropdown, Table, Label } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
@@ -49,6 +49,11 @@ class App extends React.Component {
       negative_list: [],
       total_list: [],
       polar: 0,
+      acc_polar: 0,
+      acc_positive: 0,
+      acc_negative: 0,
+      acc_neutral: 0,
+      acc_total: 0,
       begin_date: 'Loading...',
       display_charts: false,
       number_of_days: 0,
@@ -112,7 +117,7 @@ class App extends React.Component {
             this.setState({
               samples: result.data[this.state.sliderVal - 1][this.state.curr_attitude],
             })
-            console.log(result.data[this.state.sliderVal - 1][this.state.curr_attitude]);
+            // console.log(result.data[this.state.sliderVal - 1][this.state.curr_attitude]);
           
         });
     }
@@ -190,7 +195,7 @@ class App extends React.Component {
       this.setState({
         chartSliderVal: value,
       });
-      console.log(value);
+      // console.log(value);
       fetch(APIUrl_get_result + this.state.curr_topic + '/' + parseInt(value[0]) + '/' + parseInt(value[1]))
       .then(res => res.json())
       .then(
@@ -217,17 +222,23 @@ class App extends React.Component {
 
       this.fetch_sample_data(value);
 
-      fetch(APIUrl_get_result + value + '/' + parseInt(this.state.chartSliderVal[0]) + '/' + parseInt(this.state.chartSliderVal[1]))
+      fetch(APIUrl_get_result + value)
       .then(res => res.json())
       .then(
         (result) => {
           // console.log(result.data.length , this.state.sliderVal)
+          // console.log(result.data.polar[result.data.polar.length - 1])
           this.setState({
             positive_list: result.data.positive,
             neutral_list: result.data.neutral,
             negative_list: result.data.negative,
             total_list: result.data.total,
             polar: result.data.polar,
+            acc_polar: result.data.polar[result.data.polar.length - 1],
+            acc_positive: result.data.positive[result.data.positive.length - 1],
+            acc_negative: result.data.negative[result.data.negative.length - 1],
+            acc_neutral: result.data.neutral[result.data.neutral.length - 1],
+            acc_total: result.data.total[result.data.total.length - 1],
             begin_date: result.start_time,
             display_charts: true,
             stopped: result.pause,
@@ -438,7 +449,7 @@ class App extends React.Component {
         {this.state.errorMsg}
       </div>);
 
-
+      // console.log(this.state.acc_polar)
 
 
     var display_charts = {display: this.state.display_charts ? 'block' : 'none' };
@@ -454,9 +465,9 @@ class App extends React.Component {
 
 
             <Button.Group size='large'>
-              <Link to={process.env.PUBLIC_URL + "/Realtime"}>
+              <Link to={process.env.PUBLIC_URL + "/Search"}>
                 <Button>
-                  Realtime
+                  Search
                 </Button>
               </Link>
               <Button.Or />
@@ -494,8 +505,45 @@ class App extends React.Component {
             <br/>
             <br/>
 
+            <div className='charts'>
+              <Typography gutterBottom>
+                  Accumulative Sentiment
+                </Typography>
+              <GaugeChart id="gauge-chart1" 
+                nrOfLevels={2} 
+                animate={false}
+                percent={this.state.acc_polar}
+                hideText={true}
+                colors={['#FF0000', '#00FF00']}
+              />
+              <br/>
+              <Label color={'green'}>
+                Positive:
+                <Label.Detail>{this.state.acc_positive}</Label.Detail>
+              </Label>
+              <Label color={'red'}>
+                Negative:
+                <Label.Detail>{this.state.acc_negative}</Label.Detail>
+              </Label>
+              <Label >
+                Neutral:
+                <Label.Detail>{this.state.acc_neutral}</Label.Detail>
+              </Label>
+              <Label color={'yellow'}>
+                Total:
+                <Label.Detail>{this.state.acc_total}</Label.Detail>
+              </Label>
+              <br/>
+              <br/>
+              <br/>
+            </div>
+
             <div className='sample-tweets'>
+              <Typography gutterBottom>
+                    Tweet Samples
+                  </Typography>
               <div className='date-slider'>
+                  
                   <Slider className='slider'
                   onChange={this.sliderHandler}
                   valueLabelDisplay="on"
@@ -507,7 +555,7 @@ class App extends React.Component {
                 <br/>
 
 
-                <Input type='text' placeholder='#Samples (1~30)' onChange={this.inputChangeHandler.bind(this)} action>
+                <Input type='text' placeholder='#Top Tweets (1~30)' onChange={this.inputChangeHandler.bind(this)} action>
                   <input />
                   <Select compact options={attitudeOptions} defaultValue='positive' onChange={this.attitudeChangeHandler.bind(this)}/>
                   <Button type='submit' onClick={this.get_samples.bind(this)}>GET</Button>
