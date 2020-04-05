@@ -70,7 +70,7 @@ if __name__ == '__main__':
                 hour_sample_list.append(curr_hour_sample_result)
                 with open("../results/data/"+sys.argv[1]+"_hour_sample.json", 'w+') as fp:
                     json.dump({"data":hour_sample_list}, fp)
-                curr_hour_sample_dict = {"positive":[],"negative":[],"neutral":[]}
+                #curr_hour_sample_dict = {"positive":[],"negative":[],"neutral":[]}
     #            curr_hour_stat = [0,0,0,0]
                 #write to statistic file
             keyword = sys.argv[1].replace("_"," ")
