@@ -18,19 +18,19 @@ import { ordinalSuffixOf } from 'ordinal-suffix-of';
 import Typography from '@material-ui/core/Typography';
 
 // var APIUrl_get_all_topics = 'http://apollo5.cs.illinois.edu:8000/get_all_topics';
-var APIUrl_get_all_topics = 'http://apollo5.cs.illinois.edu:8000/get_all_topics';
-var APIUrl_get_daily_sample = 'http://apollo5.cs.illinois.edu:8000/get_daily_sample';
-var APIUrl_get_result = 'http://apollo5.cs.illinois.edu:8000/get_result/';
-var APIUrl_delete = 'http://apollo5.cs.illinois.edu:8000/delete/';
-var APIUrl_stop_update = 'http://apollo5.cs.illinois.edu:8000/stop_update/';
-var APIUrl_resume_update = 'http://apollo5.cs.illinois.edu:8000/resume_update/';
+// var APIUrl_get_all_topics = 'http://apollo5.cs.illinois.edu:8000/get_all_topics';
+// var APIUrl_get_daily_sample = 'http://apollo5.cs.illinois.edu:8000/get_daily_sample';
+// var APIUrl_get_result = 'http://apollo5.cs.illinois.edu:8000/get_result/';
+// var APIUrl_delete = 'http://apollo5.cs.illinois.edu:8000/delete/';
+// var APIUrl_stop_update = 'http://apollo5.cs.illinois.edu:8000/stop_update/';
+// var APIUrl_resume_update = 'http://apollo5.cs.illinois.edu:8000/resume_update/';
 
-// var APIUrl_get_all_topics = 'http://127.0.0.1:8000/get_all_topics';
-// var APIUrl_get_daily_sample = 'http://127.0.0.1:8000/get_daily_sample';
-// var APIUrl_get_result = 'http://127.0.0.1:8000/get_result/';
-// var APIUrl_delete = 'http://127.0.0.1:8000/delete/';
-// var APIUrl_stop_update = 'http://127.0.0.1:8000/stop_update/';
-// var APIUrl_resume_update = 'http://127.0.0.1:8000/resume_update/';
+var APIUrl_get_all_topics = 'http://127.0.0.1:8000/get_all_topics';
+var APIUrl_get_daily_sample = 'http://127.0.0.1:8000/get_daily_sample';
+var APIUrl_get_result = 'http://127.0.0.1:8000/get_result/';
+var APIUrl_delete = 'http://127.0.0.1:8000/delete/';
+var APIUrl_stop_update = 'http://127.0.0.1:8000/stop_update/';
+var APIUrl_resume_update = 'http://127.0.0.1:8000/resume_update/';
 
 
 class App extends React.Component {
@@ -62,6 +62,7 @@ class App extends React.Component {
       stopped: false,
       errorMsg: '',
       chartSliderVal: [1, 1],
+      op_dict: {},
     };
     this.sliderHandler = this.sliderHandler.bind(this);
     this.sliderTxtHandler = this.sliderTxtHandler.bind(this);
@@ -85,14 +86,20 @@ class App extends React.Component {
   
     inputChangeHandler(e, v) {
       this.setState({
-        number_of_samples: parseInt(v.value)
+        number_of_samples: v.value,
+      }, () => {
+        this.get_samples();
       })
+      
     }
 
     attitudeChangeHandler(e, v) {
       this.setState({
         curr_attitude: v.value,
+      }, () => {
+        this.get_samples();
       })
+      
     }
 
     get_samples() {
@@ -100,9 +107,16 @@ class App extends React.Component {
         this.setState({
           samples: [],
           errorMsg: 'Please input an integer between 1-30.'
-        })
+        }) 
         return
-      }
+      } 
+
+      if(this.state.number_of_samples == 0) {
+          this.setState({
+          samples: [],
+        })
+          return;
+        }
       if(this.state.number_of_samples > 30 || this.state.number_of_samples < 1) {
         this.setState({
           samples: [],
@@ -114,7 +128,16 @@ class App extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
+            var temp = this.state.op_dict;
+            if (!(this.state.curr_topic in temp))
+              {
+                  temp[this.state.curr_topic] = {};
+              }
+            temp[this.state.curr_topic]['curr_attitude'] = this.state.curr_attitude; 
+            temp[this.state.curr_topic]['number_of_samples'] = this.state.number_of_samples; 
+            console.log(result.data, this.state.sliderVal, this.state.curr_attitude, this.state.number_of_samples)
             this.setState({
+              op_dict: temp,
               samples: result.data[this.state.sliderVal - 1][this.state.curr_attitude],
             })
             // console.log(result.data[this.state.sliderVal - 1][this.state.curr_attitude]);
@@ -134,7 +157,17 @@ class App extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
+            var temp = this.state.op_dict;
+
+            if (!(this.state.curr_topic in temp))
+              {
+                  temp[this.state.curr_topic] = {};
+              }
+
+            temp[this.state.curr_topic]['sliderVal'] = value;
+            // console.log(temp);
             this.setState({
+              op_dict: temp,
               samples: result.data[value - 1][this.state.curr_attitude],
             })
           
@@ -228,6 +261,15 @@ class App extends React.Component {
         (result) => {
           // console.log(result.data.length , this.state.sliderVal)
           // console.log(result.data.polar[result.data.polar.length - 1])
+          if(value in this.state.op_dict) {
+            var number_of_samples = this.state.op_dict[value]['number_of_samples'];
+            var curr_attitude = this.state.op_dict[value]['curr_attitude'];
+            var sliderVal = this.state.op_dict[value]['sliderVal'];
+          } else {
+            var number_of_samples = 0;
+            var curr_attitude = 'positive';
+            var sliderVal = 1;
+          }
           this.setState({
             positive_list: result.data.positive,
             neutral_list: result.data.neutral,
@@ -242,6 +284,12 @@ class App extends React.Component {
             begin_date: result.start_time,
             display_charts: true,
             stopped: result.pause,
+            curr_topic: value,
+            number_of_samples: number_of_samples,
+            curr_attitude: curr_attitude,
+            sliderVal: sliderVal,
+          }, () => {
+            this.get_samples();
           })
           
         });
@@ -413,6 +461,11 @@ class App extends React.Component {
       , {text: 'Neutral', key: 'neutral', value: 'neutral'}
       , {text: 'Negative', key: 'negative', value: 'negative'}];
 
+    const numberOptions = [...Array(31).keys()].map(e => {
+        return {text: e.toString(10), key: e, value: e};
+      });
+    console.log(numberOptions);
+
     const marks = [
       {
         value: 1,
@@ -550,16 +603,16 @@ class App extends React.Component {
                   max={this.state.number_of_days}
                   min={1}
                   marks={marks}
-                  defaultValue={this.state.sliderVal}/>
+                  value={this.state.sliderVal}/>
                 </div>
                 <br/>
 
-
-                <Input type='text' placeholder='#Top Tweets (1~30)' onChange={this.inputChangeHandler.bind(this)} action>
-                  <input />
-                  <Select compact options={attitudeOptions} defaultValue='positive' onChange={this.attitudeChangeHandler.bind(this)}/>
-                  <Button type='submit' onClick={this.get_samples.bind(this)}>GET</Button>
-                </Input>
+                <span>
+                  Show me {' '}
+                  <Dropdown  selection compact options={numberOptions} value={this.state.number_of_samples} onChange={this.inputChangeHandler.bind(this)}/>
+                  {' '}sample tweets of attitude {' '}
+                  <Dropdown  selection compact options={attitudeOptions} value={this.state.curr_attitude} onChange={this.attitudeChangeHandler.bind(this)}/>
+                </span>  
                 <br/>
                 <br/>
                 {TableExampleDefinition}
