@@ -25,6 +25,8 @@ def process(Dir, File):
 while 1:
     print ('Start Processing!')
     for dir_i in os.listdir('./datasets'):
+        if dir_i == '.DS_Store':
+            continue
         checked = []
         try:
             check_file = open('./datasets/{}/check.list'.format(dir_i), 'r')

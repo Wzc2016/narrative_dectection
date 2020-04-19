@@ -184,7 +184,7 @@ def outputNarrative(pre, tweetMap, data, M, N, outpath):
             json.dump({'positive': positive, 'negative':negative, 'neutral':neutral, 'time': timestamp}, outfile)
             print (file=outfile)
 
-    Polarize(sigma, outpath, N)
+        Polarize(sigma, outpath, N)
 
 def run(pathD=args.pathD, pathK=args.pathK, fastmode=args.fastmode, \
     N=args.N, l1=args.l1, l2=args.l2, epochs=args.epochs, K=args.process, outpath=args.outpath):
@@ -209,6 +209,8 @@ if __name__ == '__main__':
     while 1:
         print ('Start Algorithms!')
         for dir_i in os.listdir('./extracted'):
+            if dir_i == '.DS_Store':
+                continue
             # check whether need to run
             try:
                 checked = json.loads(open('./output/{}/check.list'.format(dir_i)).readlines()[-1][:-1])
@@ -221,9 +223,11 @@ if __name__ == '__main__':
             except:
                 pass
 
+            if len(os.listdir('./extracted/{}'.format(dir_i))) == 0:
+                continue
             for N in range(3, 6):
                 run(pathD=dir_i, pathK=args.pathK, fastmode=args.fastmode, \
                     N=N, l1=args.l1, l2=args.l2, epochs=args.epochs, K=args.process, outpath=dir_i)
         print ('finished!')
         # traverse every 1 hour
-        time.sleep(10)
+        time.sleep(60 * 60)
