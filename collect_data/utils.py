@@ -21,7 +21,7 @@ def getData(pathD, pathK, kthreshold, uthreshold):
         if file_i == 'check.list':
             continue
         print ('./extracted/{}/'.format(pathD) + file_i)
-        temp = pd.read_csv('./extracted/{}/'.format(pathD) + file_i, sep='\t')
+        temp = pd.read_csv('./extracted/{}/'.format(pathD) + file_i, sep='\t', lineterminator='\n')
         count += len(temp); data.append(temp)
         if count > 100000:
             break
