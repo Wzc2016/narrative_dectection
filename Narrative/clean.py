@@ -16,12 +16,15 @@ def process(Dir, File):
     with open('./extracted/{}/{}.csv'.format(dir_i, file_j[:-5]), 'w') as outfile:
         print ('name\trawTweet\ttime', file=outfile)
         for tweet in data:
-            user = tweet['user']['id']
-            text = tweet['text'].replace('\n', ' ') + ' ' + \
-                'https://twitter.com/' + tweet['user']['screen_name'] + '/status/' + tweet['id_str']
-            time = int(datetime.datetime.strptime(tweet['created_at'], "%a %b %d %H:%M:%S  +0000 %Y").timestamp())
-            print ('{}\t{}\t{}'.format(user, text, time), file=outfile)
-        
+            try:
+                user = tweet['user']['id']
+                text = tweet['text'].replace('\n', ' ') + ' ' + \
+                    'https://twitter.com/' + tweet['user']['screen_name'] + '/status/' + tweet['id_str']
+                time = int(datetime.datetime.strptime(tweet['created_at'], "%a %b %d %H:%M:%S  +0000 %Y").timestamp())
+                print ('{}\t{}\t{}'.format(user, text, time), file=outfile)
+            except:
+                pass
+            
 while 1:
     print ('Start Processing!')
     for dir_i in os.listdir('./datasets'):
