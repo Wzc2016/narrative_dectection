@@ -13,7 +13,7 @@
     "cors-anywhere": "^0.4.1",
     "highcharts": "^8.0.4",
     "highcharts-react-official": "^3.0.0",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "ordinal-suffix-of": "^1.0.1",
     "rc-slider": "^9.2.2",
     "react": "^16.12.0",
